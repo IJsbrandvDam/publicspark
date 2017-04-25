@@ -60,8 +60,13 @@ def CreateActiveThread(roomID, userID, messageText, spark):
         NextStepInConversation(int(threadList[i].getConversationValue()), i, messageText, roomID, spark)
         #print("created conversation")
     else:
-        #print("thread already active, so using it as an input instead")
-        NextStepInConversation(int(threadList[i].getConversationValue()), i, messageText, roomID, spark)
+        string1 = str(userID)
+        string2 = threadList[i].getUserID()
+        if string1 == string2:
+            #print("user matches")
+            NextStepInConversation(int(threadList[i].getConversationValue()), i, messageText, roomID, spark)
+        else:
+            SendMessage("Someone else already initiated a session in this room, please let them finish the initialization before starting a new one", roomID, spark)
 
 #call after every received message to check if the room is currently involved in a conversation thread
 def CheckActiveThread(roomID, userID, messageText, spark):
