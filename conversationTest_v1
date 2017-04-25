@@ -89,7 +89,7 @@ def CheckActiveThread(roomID, userID, messageText, spark):
             SendMessage("Someone else already initiated a session in this room, please let them finish the initialization before starting a new one", roomID, spark)
 
 #delete conversation thread for roomID with index <index>
-def DeleteActiveThread(index):
+def DeleteActiveThread(index, roomID):
     if index == None:
         print("unable to delete active thread for " + str(roomID) + " because no thread exists")
     else:
@@ -101,7 +101,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
     #print("next step called")
     messageText = str(t)
     room_name = spark.rooms.get(roomID)
-    
+
     if(conversationState == 0):
         SendMessage(SetConversationResponseText(0), roomID, spark)
         threadList[index].setConversationValue(1)
@@ -138,7 +138,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
     elif(conversationState == 4):
         if("no" in messageText):
             SendMessage(SetConversationResponseText(4), roomID, spark)
-            DeleteActiveThread(index)
+            DeleteActiveThread(index, roomID)
             StartSession(spark, roomID, room_name)
 
         elif("yes" in messageText):
@@ -149,7 +149,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
         if(MatchTemplate(messageText)):
             StoreTemplate(messageText)
             SendMessage(SetConversationResponseText(6), roomID, spark)
-            DeleteActiveThread(index)
+            DeleteActiveThread(index, roomID)
             StartSession(spark, roomID, room_name)
         else:
             SendMessage(SetConversationResponseText(10), roomID, spark)
@@ -167,11 +167,11 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
     elif(conversationState == 7):
         if("no" in messageText):
             SendMessage(SetConversationResponseText(9), roomID, spark)
-            DeleteActiveThread(index)
+            DeleteActiveThread(index, roomID)
 
         elif("yes" in messageText):
             SendMessage(SetConversationResponseText(4), roomID, spark)
-            DeleteActiveThread(index)
+            DeleteActiveThread(index, roomID)
             StartSession(spark, roomID, room_name)
 
 
@@ -216,6 +216,7 @@ def SendMessage(text, room_id, spark):
 
 #placeholder for starting BrainSpark session
 def StartSession(spark, room_id, room_name):
+    print("session started")
     memberList = spark.memberships.list(roomId=room_id)
     GROUP_MESSAGE = "Brainstorming session for '%s' is starting." % (room_name.title)
     spark.messages.create(roomId=room_id, text=GROUP_MESSAGE) # Message the room.
