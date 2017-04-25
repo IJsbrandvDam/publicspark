@@ -237,6 +237,9 @@ def index(request):
     if webhook['data']['personEmail'] != bot_email:
         # parse the initiation message to remove the bot tag
         in_message = message.text.replace(bot_name, '')
+        print(in_message)
+        print(type(in_message))
+
         # conditional for the initiation of the test. 
         # here we filter for a message from a "group" room and for the message "start"
         # If it matches then send a message to the group room, and also send a message to each person individually
