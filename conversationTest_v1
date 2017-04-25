@@ -57,14 +57,14 @@ def CreateActiveThread(roomID, userID, messageText):
         #print("no active thread found, created thread for room " + str(roomID))
         threadList.append(activeThread(roomID, userID))
         i = GetThreadIndex(roomID)
-        NextStepInConversation(int(threadList[i].getConversationValue()), i, messageText, roomID)
+        NextStepInConversation(int(threadList[i].getConversationValue()), i, messageText, roomID, spark)
         #print("created conversation")
     else:
         #print("thread already active, so using it as an input instead")
-        NextStepInConversation(int(threadList[i].getConversationValue()), i, messageText, roomID)
+        NextStepInConversation(int(threadList[i].getConversationValue()), i, messageText, roomID, spark)
 
 #call after every received message to check if the room is currently involved in a conversation thread
-def CheckActiveThread(roomID, userID, messageText):
+def CheckActiveThread(roomID, userID, messageText, spark):
     i = GetThreadIndex(roomID)
     if i == None:
         print("no active thread found for room " + str(roomID))
@@ -74,9 +74,9 @@ def CheckActiveThread(roomID, userID, messageText):
         string2 = threadList[i].getUserID()
         if string1 == string2:
             #print("user matches")
-            NextStepInConversation(int(threadList[i].getConversationValue()), i, messageText, roomID)
+            NextStepInConversation(int(threadList[i].getConversationValue()), i, messageText, roomID, spark)
         else:
-            SendMessage("Someone else already initiated a session in this room, please let them finish the initialization before starting a new one", roomID)
+            SendMessage("Someone else already initiated a session in this room, please let them finish the initialization before starting a new one", roomID, spark)
 
 #delete conversation thread for roomID with index <index>
 def DeleteActiveThread(index):
@@ -87,78 +87,78 @@ def DeleteActiveThread(index):
         print("deleted thread for roomID " + str(roomID))
 
 #Used to determine the flow of conversation
-def NextStepInConversation(conversationState, index, t, roomID):
+def NextStepInConversation(conversationState, index, t, roomID, spark):
     #print("next step called")
     messageText = str(t)
 
     if(conversationState == 0):
-        SendMessage(SetConversationResponseText(0), roomID)
+        SendMessage(SetConversationResponseText(0), roomID, spark)
         threadList[index].setConversationValue(1)
 
     elif(conversationState == 1):
         if(messageText.lower() == "blank session"):
-            SendMessage(SetConversationResponseText(1), roomID)
+            SendMessage(SetConversationResponseText(1), roomID, spark)
             threadList[index].setConversationValue(2)
 
         elif(messageText.lower() == "template"):
-            SendMessage(SetConversationResponseText(7), roomID)
+            SendMessage(SetConversationResponseText(7), roomID, spark)
             threadList[index].setConversationValue(6)
 
         else:
-            SendMessage("Sorry I do not recognize that input, please select either blank session or template", roomID)
+            SendMessage("Sorry I do not recognize that input, please select either blank session or template", roomID, spark)
 
     elif(conversationState == 2):
         threadList[index].setRepeatCounter(int(messageText)-1)
         text = SetConversationResponseText(2) + str(threadList[index].getRepeatCounter())
-        SendMessage(text, roomID)
+        SendMessage(text, roomID, spark)
         threadList[index].setConversationValue(3)
 
 
     elif(conversationState == 3):
         if threadList[index].getRepeatCounter() > 0 :
-            SendMessage(SetConversationResponseText(2), roomID)
+            SendMessage(SetConversationResponseText(2), roomID, spark)
             threadList[index].setRepeatCounter(threadList[index].getRepeatCounter()-1)
 
         else:
-            SendMessage(SetConversationResponseText(3), roomID)
+            SendMessage(SetConversationResponseText(3), roomID, spark)
             threadList[index].setConversationValue(4)
 
     elif(conversationState == 4):
         if(messageText.lower() == "no"):
-            SendMessage(SetConversationResponseText(4), roomID)
+            SendMessage(SetConversationResponseText(4), roomID, spark)
             DeleteActiveThread(index)
             StartSession()
 
         elif(messageText.lower() == "yes"):
-            SendMessage(SetConversationResponseText(5), roomID)
+            SendMessage(SetConversationResponseText(5), roomID, spark)
             threadList[index].setConversationValue(5)
 
     elif(conversationState == 5):
         if(MatchTemplate(messageText)):
             StoreTemplate(messageText)
-            SendMessage(SetConversationResponseText(6), roomID)
+            SendMessage(SetConversationResponseText(6), roomID, spark)
             DeleteActiveThread(index)
             StartSession()
         else:
-            SendMessage(SetConversationResponseText(10), roomID)
+            SendMessage(SetConversationResponseText(10), roomID, spark)
 
     elif(conversationState == 6):
         if(messageText.lower() == "new template"):
-            SendMessage(SetConversationResponseText(1), roomID)
+            SendMessage(SetConversationResponseText(1), roomID, spark)
             threadList[index].setConversationValue(2)
 
         else:
-            SendMessage(SetConversationResponseText(8), roomID)
+            SendMessage(SetConversationResponseText(8), roomID, spark)
             LoadTemplate(messageText)
             threadList[index].setConversationValue(7)
 
     elif(conversationState == 7):
         if(messageText.lower() == "no"):
-            SendMessage(SetConversationResponseText(9), roomID)
+            SendMessage(SetConversationResponseText(9), roomID, spark)
             DeleteActiveThread(index)
 
         elif(messageText.lower() == "yes"):
-            SendMessage(SetConversationResponseText(4), roomID)
+            SendMessage(SetConversationResponseText(4), roomID, spark)
             DeleteActiveThread(index)
             StartSession()
 
@@ -199,7 +199,7 @@ def SetConversationResponseText(conversationValue):
         return("I'm sorry, there is no template with that name, please try again")
 
 #placeholder for sending message
-def SendMessage(text, room_id):
+def SendMessage(text, room_id, spark):
     spark.messages.create(roomId=room_id, text=text)
 
 #placeholder for starting BrainSpark session
@@ -220,7 +220,7 @@ def LoadTemplate(name):
 
 #placeholder for checking if template exists
 def MatchTemplate(name):
-    #SendMessage("template found")
+    print("template found")
     return(True)
 
 @post('/')
@@ -268,10 +268,10 @@ def index(request):
             spark.messages.create(roomId=room_id, text=BEST_IDEA)
        #placeholder to test conversation, convert to 'start' when working
         elif message.roomType == "group" and 'begin' in in_message:
-            CreateActiveThread(room_id, message.personEmail, in_message) 
+            CreateActiveThread(room_id, message.personEmail, in_message, spark) 
 
         elif message.roomType == "group":
-            CheckActiveThread(room_id, message.personEmail, in_message)
+            CheckActiveThread(room_id, message.personEmail, in_message, spark)
 
  # looks for personal messages in 1:1 conversations. These messages need to be saved to our database
         else:
@@ -304,4 +304,3 @@ security_email = "spark-cisco-it-admin-bot@cisco.com"
 bot_name = "awstest1"
 bearer = "MjViMjgwMzQtMGY5MC00MGYwLTk2YmUtNGQwOTc5OTVkODc4ODc3ZDRkY2MtZDA3"
 run_itty(server='wsgiref', host='0.0.0.0', port=10010)
-
