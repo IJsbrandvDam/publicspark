@@ -100,6 +100,7 @@ def DeleteActiveThread(index):
 def NextStepInConversation(conversationState, index, t, roomID, spark):
     #print("next step called")
     messageText = str(t)
+    room_name = spark.rooms.get(room_id)
 
     if(conversationState == 0):
         SendMessage(SetConversationResponseText(0), roomID, spark)
@@ -138,7 +139,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
         if("no" in messageText):
             SendMessage(SetConversationResponseText(4), roomID, spark)
             DeleteActiveThread(index)
-            StartSession()
+            StartSession(spark, roomID, room_name)
 
         elif("yes" in messageText):
             SendMessage(SetConversationResponseText(5), roomID, spark)
@@ -149,7 +150,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
             StoreTemplate(messageText)
             SendMessage(SetConversationResponseText(6), roomID, spark)
             DeleteActiveThread(index)
-            StartSession()
+            StartSession(spark, roomID, room_name)
         else:
             SendMessage(SetConversationResponseText(10), roomID, spark)
 
@@ -171,7 +172,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
         elif("yes" in messageText):
             SendMessage(SetConversationResponseText(4), roomID, spark)
             DeleteActiveThread(index)
-            StartSession()
+            StartSession(spark, roomID, room_name)
 
 
 #used to set the basic text for the next response
@@ -214,8 +215,16 @@ def SendMessage(text, room_id, spark):
     spark.messages.create(roomId=room_id, text=text)
 
 #placeholder for starting BrainSpark session
-def StartSession():
-    print("starting session...")
+def StartSession(spark, room_id, room_name):
+    memberList = spark.memberships.list(roomId=room_id)
+        GROUP_MESSAGE = "Brainstorming session for '%s' is starting." % (room_name.title)
+        spark.messages.create(roomId=room_id, text=GROUP_MESSAGE) # Message the room.
+        for Membership in memberList: # Message each member in the room individually.
+            if Membership.personEmail != bot_email and Membership.personEmail != security_email: # filter out the bot and cisco security bot, we dont want to send them a message!
+                INTRO_MESSAGE = "You have been invited to brainstorming session '%s'. Type 'help' for a brief introduction on how I work! What is your idea?" % (room_name.title)
+                spark.messages.create(toPersonEmail=Membership.personEmail, text=INTRO_MESSAGE)
+                createDatabase(Membership.personEmail.replace('@cisco.com', '').replace('@gmail.com',''))
+    
 
 #placeholder for storing the template
 def StoreTemplate(name):
