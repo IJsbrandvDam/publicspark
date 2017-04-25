@@ -9,7 +9,6 @@ from DBconnect import sendToDatabase, pullFromDatabase, createDatabase, deleteDa
 
 threadList = []
 
-
 #used to track conversation process
 class activeThread():
     def __init__(self, roomID, userID, conValue = 0, repeatCounter = 0, reversedCounter = 0):
@@ -216,7 +215,6 @@ def SendMessage(text, room_id, spark):
 
 #placeholder for starting BrainSpark session
 def StartSession(spark, room_id, room_name):
-    print("session started")
     memberList = spark.memberships.list(roomId=room_id)
     GROUP_MESSAGE = "Brainstorming session for '%s' is starting." % (room_name.title)
     spark.messages.create(roomId=room_id, text=GROUP_MESSAGE) # Message the room.
@@ -258,7 +256,6 @@ def index(request):
     if webhook['data']['personEmail'] != bot_email:
         # parse the initiation message to remove the bot tag
         in_message = message.text.replace(bot_name, '')
-        print(type(in_message))
         # conditional for the initiation of the test. 
         # here we filter for a message from a "group" room and for the message "start"
         # If it matches then send a message to the group room, and also send a message to each person individually
@@ -319,7 +316,6 @@ def index(request):
     return "true"
 
 #TODO: sendToDatabase(), generateResponse().
-
 
 bot_email = "awstest1@sparkbot.io"
 security_email = "spark-cisco-it-admin-bot@cisco.com"
