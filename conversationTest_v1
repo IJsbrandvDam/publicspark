@@ -237,6 +237,7 @@ def index(request):
     if webhook['data']['personEmail'] != bot_email:
         # parse the initiation message to remove the bot tag
         in_message = message.text.replace(bot_name, '')
+        print(type(in_message))
         # conditional for the initiation of the test. 
         # here we filter for a message from a "group" room and for the message "start"
         # If it matches then send a message to the group room, and also send a message to each person individually
@@ -301,6 +302,6 @@ def index(request):
 
 bot_email = "awstest1@sparkbot.io"
 security_email = "spark-cisco-it-admin-bot@cisco.com"
-bot_name = "@awstest1 "
+bot_name = "awstest1 "
 bearer = "MjViMjgwMzQtMGY5MC00MGYwLTk2YmUtNGQwOTc5OTVkODc4ODc3ZDRkY2MtZDA3"
 run_itty(server='wsgiref', host='0.0.0.0', port=10010)
