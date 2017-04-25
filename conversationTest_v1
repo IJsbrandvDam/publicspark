@@ -100,8 +100,8 @@ def DeleteActiveThread(index):
 def NextStepInConversation(conversationState, index, t, roomID, spark):
     #print("next step called")
     messageText = str(t)
-    room_name = spark.rooms.get(room_id)
-
+    room_name = spark.rooms.get(roomID)
+    
     if(conversationState == 0):
         SendMessage(SetConversationResponseText(0), roomID, spark)
         threadList[index].setConversationValue(1)
