@@ -96,11 +96,11 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
         threadList[index].setConversationValue(1)
 
     elif(conversationState == 1):
-        if(messageText.lower() == "blank session"):
+        if("blank session" in messageText):
             SendMessage(SetConversationResponseText(1), roomID, spark)
             threadList[index].setConversationValue(2)
 
-        elif(messageText.lower() == "template"):
+        elif("template" in messageText):
             SendMessage(SetConversationResponseText(7), roomID, spark)
             threadList[index].setConversationValue(6)
 
@@ -124,12 +124,12 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
             threadList[index].setConversationValue(4)
 
     elif(conversationState == 4):
-        if(messageText.lower() == "no"):
+        if("no" in messageText):
             SendMessage(SetConversationResponseText(4), roomID, spark)
             DeleteActiveThread(index)
             StartSession()
 
-        elif(messageText.lower() == "yes"):
+        elif("yes" in messageText):
             SendMessage(SetConversationResponseText(5), roomID, spark)
             threadList[index].setConversationValue(5)
 
@@ -143,7 +143,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
             SendMessage(SetConversationResponseText(10), roomID, spark)
 
     elif(conversationState == 6):
-        if(messageText.lower() == "new template"):
+        if("new template" in messageText):
             SendMessage(SetConversationResponseText(1), roomID, spark)
             threadList[index].setConversationValue(2)
 
@@ -153,11 +153,11 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
             threadList[index].setConversationValue(7)
 
     elif(conversationState == 7):
-        if(messageText.lower() == "no"):
+        if("no" in messageText):
             SendMessage(SetConversationResponseText(9), roomID, spark)
             DeleteActiveThread(index)
 
-        elif(messageText.lower() == "yes"):
+        elif("yes" in messageText):
             SendMessage(SetConversationResponseText(4), roomID, spark)
             DeleteActiveThread(index)
             StartSession()
@@ -237,8 +237,6 @@ def index(request):
     if webhook['data']['personEmail'] != bot_email:
         # parse the initiation message to remove the bot tag
         in_message = message.text.replace(bot_name, '')
-        print(in_message)
-
         # conditional for the initiation of the test. 
         # here we filter for a message from a "group" room and for the message "start"
         # If it matches then send a message to the group room, and also send a message to each person individually
@@ -270,10 +268,10 @@ def index(request):
             spark.messages.create(roomId=room_id, text=BEST_IDEA)
        #placeholder to test conversation, convert to 'start' when working
         elif message.roomType == "group" and 'begin' in in_message:
-            CreateActiveThread(room_id, message.personEmail, str(in_message), spark) 
+            CreateActiveThread(room_id, message.personEmail, in_message, spark) 
 
         elif message.roomType == "group":
-            CheckActiveThread(room_id, message.personEmail, str(in_message), spark)
+            CheckActiveThread(room_id, message.personEmail, in_message, spark)
 
  # looks for personal messages in 1:1 conversations. These messages need to be saved to our database
         else:
@@ -303,6 +301,6 @@ def index(request):
 
 bot_email = "awstest1@sparkbot.io"
 security_email = "spark-cisco-it-admin-bot@cisco.com"
-bot_name = "@awstest1 "
+bot_name = "@awstest1"
 bearer = "MjViMjgwMzQtMGY5MC00MGYwLTk2YmUtNGQwOTc5OTVkODc4ODc3ZDRkY2MtZDA3"
 run_itty(server='wsgiref', host='0.0.0.0', port=10010)
