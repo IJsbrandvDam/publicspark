@@ -204,24 +204,24 @@ def SendMessage(text, room_id):
 
 #placeholder for starting BrainSpark session
 def StartSession():
-    #SendMessage("starting session...")
+    print("starting session...")
 
 #placeholder for storing the template
 def StoreTemplate(name):
-    #SendMessage("stored template with name " + name)
+    print("stored template with name " + name)
 
 #placeholder for listing the templates
 def ListTemplates():
-    #SendMessage("placeholder for the template list")
+    print("placeholder for the template list")
 
 #placeholder for loading a template
 def LoadTemplate(name):
-    #SendMessage("template " + name + "has been loaded. It contains the following questions: <list will follow>")
+    print("template " + name + "has been loaded. It contains the following questions: <list will follow>")
 
 #placeholder for checking if template exists
 def MatchTemplate(name):
     #SendMessage("template found")
-    #return(True)
+    return(True)
 
 @post('/')
 def index(request):
