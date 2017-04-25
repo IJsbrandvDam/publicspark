@@ -12,11 +12,12 @@ threadList = []
 
 #used to track conversation process
 class activeThread():
-    def __init__(self, roomID, userID, conValue = 0, repeatCounter = 0):
+    def __init__(self, roomID, userID, conValue = 0, repeatCounter = 0, reversedCounter = 0):
         self.roomID = roomID
         self.userID = userID
         self.conValue = conValue
         self.repeatCounter = repeatCounter
+        self.reversedCounter = reversedCounter
         
     def setConversationValue(self, i):
         self.conValue = i
@@ -29,12 +30,16 @@ class activeThread():
 
     def setRepeatCounter(self, i):
         self.repeatCounter = i
+        self.reversedCounter = self.reversedCounter + 1
 
     def getRepeatCounter(self):
         return(self.repeatCounter)
 
     def getUserID(self):
         return(self.userID)
+
+    def getReversedCounter(self):
+        return(self.reversedCounter)
 
 #check if a room already has a thread:
 def GetThreadIndex(messageRoom):
@@ -113,15 +118,16 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
             SendMessage("Sorry I do not recognize that input, please select either blank session or template", roomID, spark)
 
     elif(conversationState == 2):
-        threadList[index].setRepeatCounter(int(messageText)-1)
-        text = SetConversationResponseText(2) + str(threadList[index].getRepeatCounter())
+        text = SetConversationResponseText(2) + str(threadList[index].getReversedCounter()+1)
         SendMessage(text, roomID, spark)
+        threadList[index].setRepeatCounter(int(messageText)-1)
         threadList[index].setConversationValue(3)
 
 
     elif(conversationState == 3):
         if threadList[index].getRepeatCounter() > 0 :
-            SendMessage(SetConversationResponseText(2), roomID, spark)
+            text = SetConversationResponseText(2) + str(threadList[index].getReversedCounter()+1)
+            SendMessage(text, roomID, spark)
             threadList[index].setRepeatCounter(threadList[index].getRepeatCounter()-1)
 
         else:
