@@ -51,7 +51,7 @@ def GetThreadIndex(messageRoom):
     return activeIndex
 
 #call after message is "start" has been reveived to start a new conversation thread
-def CreateActiveThread(roomID, userID, messageText):
+def CreateActiveThread(roomID, userID, messageText, spark):
     i = GetThreadIndex(roomID)
     if i == None:
         #print("no active thread found, created thread for room " + str(roomID))
