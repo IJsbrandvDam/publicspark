@@ -301,6 +301,6 @@ def index(request):
 
 bot_email = "awstest1@sparkbot.io"
 security_email = "spark-cisco-it-admin-bot@cisco.com"
-bot_name = "@awstest1"
+bot_name = "@awstest1 "
 bearer = "MjViMjgwMzQtMGY5MC00MGYwLTk2YmUtNGQwOTc5OTVkODc4ODc3ZDRkY2MtZDA3"
 run_itty(server='wsgiref', host='0.0.0.0', port=10010)
