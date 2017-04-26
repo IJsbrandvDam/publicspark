@@ -35,7 +35,7 @@ def pullFromDatabase():
                               host='brainspark.cptvcix7ijfy.us-west-2.rds.amazonaws.com',
                               database='brainspark')
 	mycursor=conn.cursor()
-	sql = "SELECT idTemplates FROM Templates WHERE Question = '$Question'"
+	sql = "SELECT Question FROM Templates"
 	try:
 		mycursor.execute(sql)
 		results = mycursor.fetchall()
