@@ -130,8 +130,6 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
 
     #after receiving answer to "How many questions qould you like to include?"
     elif(conversationState == 2):
-        createTemplate(threadList[index].getTemplateName())
-        sendToTemp(threadList[index].getTemplateName(),  messageText)
         text = SetConversationResponseText(2) + str(threadList[index].getReversedCounter()+1)
         SendMessage(text, roomID, spark)
         threadList[index].setRepeatCounter(int(messageText)-1)
