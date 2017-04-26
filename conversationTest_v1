@@ -116,7 +116,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
 
     #after receiving answer to "Would you like to start a load a template or start a new template?"
     elif(conversationState == 1):
-        if("new template" in messageText)
+        if("new template" in messageText):
             SendMessage(SetConversationResponseText(5), roomID, spark) #updated from 1
             threadList[index].setConversationValue(8) #updated from 2
 
