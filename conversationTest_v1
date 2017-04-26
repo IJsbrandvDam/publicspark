@@ -6,6 +6,7 @@ import sys
 import os
 from generateResponse import generateResponse
 from DBconnect import sendToDatabase, pullFromDatabase, createDatabase, deleteDatabase, createTemplate, sendToTemp
+import mysql.connector
 
 threadList = []
 
@@ -195,7 +196,9 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
     elif(conversatoinState == 8):
         if(MatchTemplate):
             threadList[index].setTemplateName(messageText)
+            print("createTemplate started")
             createTemplate(messageText)
+            print("createTemplate end")
             SendMessage(SetConversationResponseText(1), roomID, spark)
             threadList[index].setConversationValue(2)
 
@@ -275,6 +278,12 @@ def MatchTemplate(name):
 
 @post('/')
 def index(request):
+
+    cnx = mysql.connector.connect(user='brainspark', password='C!sco123',
+    host='brainspark.cptvcix7ijfy.us-west-2.rds.amazonaws.com:3306',
+    database='brainspark')
+    cnx.close()
+    
     spark = CiscoSparkAPI(access_token=bearer) # spark apis
     webhook = json.loads(request.body) # get payload from webhook
     room_id = webhook['data']['roomId'] # get room id from message
