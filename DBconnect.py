@@ -30,12 +30,12 @@ def sendToDatabase(personName,answer):
 	return "true"
 # print(mycursor.fetchall())
 
-def pullFromDatabase(message, personEmail):
+def pullFromDatabase():
 	conn = mysql.connector.connect(user='brainspark', password='C!sco123',
                               host='brainspark.cptvcix7ijfy.us-west-2.rds.amazonaws.com',
                               database='brainspark')
 	mycursor=conn.cursor()
-	sql = "SELECT * FROM ideas WHERE q2 = '%s'" % ("test@cisco.com")
+	sql = "SELECT * FROM Templates WHERE Question = '$Question'"
 	try:
 		mycursor.execute(sql)
 		results = mycursor.fetchall()
@@ -84,6 +84,6 @@ def sendToTemp(tempName,question):
 
 
 # createDatabase("chris")
-deleteDatabase("ctsioura")
+#deleteDatabase("ctsioura")
 # sendToDatabase("chris","bla bla bla")
-# pullFromDatabase("message", "personEmail")
+pullFromDatabase()
