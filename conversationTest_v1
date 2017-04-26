@@ -278,10 +278,6 @@ def MatchTemplate(name):
 
 @post('/')
 def index(request):
-
-    cnx = mysql.connector.connect(user='brainspark', password='C!sco123', host='brainspark.cptvcix7ijfy.us-west-2.rds.amazonaws.com:3306', database='brainspark')
-    cnx.close()
-
     spark = CiscoSparkAPI(access_token=bearer) # spark apis
     webhook = json.loads(request.body) # get payload from webhook
     room_id = webhook['data']['roomId'] # get room id from message
