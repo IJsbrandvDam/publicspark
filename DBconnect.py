@@ -1,4 +1,5 @@
 import mysql.connector
+import json
 
 def createDatabase(personName):
 	conn = mysql.connector.connect(user='brainspark', password='C!sco123',
