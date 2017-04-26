@@ -193,7 +193,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
             DeleteActiveThread(index, roomID)
             StartSession(spark, roomID, room_name)
 
-    elif(conversatoinState == 8):
+    elif(conversationState == 8):
         if(MatchTemplate):
             threadList[index].setTemplateName(messageText)
             print("createTemplate started")
