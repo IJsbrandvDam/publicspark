@@ -44,7 +44,7 @@ def pullFromDatabase():
 	except:
 		print "Nothing found"
 	conn.commit()
-	return results
+	return results.json()
 
 
 # def createTemplateDB(tempName):
