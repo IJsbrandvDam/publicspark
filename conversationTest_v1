@@ -5,18 +5,19 @@ import requests
 import sys
 import os
 from generateResponse import generateResponse
-from DBconnect import sendToDatabase, pullFromDatabase, createDatabase, deleteDatabase
+from DBconnect import sendToDatabase, pullFromDatabase, createDatabase, deleteDatabase, createTemplate, sendToTemp
 
 threadList = []
 
 #used to track conversation process
 class activeThread():
-    def __init__(self, roomID, userID, conValue = 0, repeatCounter = 0, reversedCounter = 0):
+    def __init__(self, roomID, userID, conValue = 0, repeatCounter = 0, reversedCounter = 0, templateName = ''):
         self.roomID = roomID
         self.userID = userID
         self.conValue = conValue
         self.repeatCounter = repeatCounter
         self.reversedCounter = reversedCounter
+        self.templateName = templateName
         
     def setConversationValue(self, i):
         self.conValue = i
@@ -39,6 +40,13 @@ class activeThread():
 
     def getReversedCounter(self):
         return(self.reversedCounter)
+
+    def getTemplateName(self):
+        return(self.templateName)
+
+    def setTemplateName(self, name):
+        self.templateName = name
+
 
 #check if a room already has a thread:
 def GetThreadIndex(messageRoom):
@@ -101,39 +109,47 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
     messageText = str(t)
     room_name = spark.rooms.get(roomID)
 
+    #start of the chain, response to "begin"
     if(conversationState == 0):
         SendMessage(SetConversationResponseText(0), roomID, spark)
         threadList[index].setConversationValue(1)
 
+    #after receiving answer to "Would you like to start a load a template or start a new template?"
     elif(conversationState == 1):
-        if("blank session" in messageText):
-            SendMessage(SetConversationResponseText(1), roomID, spark)
-            threadList[index].setConversationValue(2)
+        if("new template" in messageText)
+            SendMessage(SetConversationResponseText(5), roomID, spark) #updated from 1
+            threadList[index].setConversationValue(8) #updated from 2
 
         elif("template" in messageText):
-            SendMessage(SetConversationResponseText(7), roomID, spark)
-            threadList[index].setConversationValue(6)
+            SendMessage(SetConversationResponseText(7), roomID, spark) 
+            threadList[index].setConversationValue(6) 
 
         else:
             SendMessage("Sorry I do not recognize that input, please select either blank session or template", roomID, spark)
 
+    #after receiving answer to "How many questions qould you like to include?"
     elif(conversationState == 2):
+        createTemplate(threadList[index].getTemplateName())
+        sendToTemp(threadList[index].getTemplateName(),  messageText)
         text = SetConversationResponseText(2) + str(threadList[index].getReversedCounter()+1)
         SendMessage(text, roomID, spark)
         threadList[index].setRepeatCounter(int(messageText)-1)
         threadList[index].setConversationValue(3)
 
-
+    #after receiving answer to "please type question #"
     elif(conversationState == 3):
+        sendToTemp(threadList[index].getTemplateName(),  messageText)
         if threadList[index].getRepeatCounter() > 0 :
             text = SetConversationResponseText(2) + str(threadList[index].getReversedCounter()+1)
             SendMessage(text, roomID, spark)
             threadList[index].setRepeatCounter(threadList[index].getRepeatCounter()-1)
 
         else:
-            SendMessage(SetConversationResponseText(3), roomID, spark)
-            threadList[index].setConversationValue(4)
+            SendMessage(SetConversationResponseText(6), roomID, spark)
+            DeleteActiveThread(index, roomID)
+            StartSession(spark, roomID, room_name)
 
+    #after receiving answer to "Would you like to save this BrainSpark session as a template?"
     elif(conversationState == 4):
         if("no" in messageText):
             SendMessage(SetConversationResponseText(4), roomID, spark)
@@ -144,6 +160,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
             SendMessage(SetConversationResponseText(5), roomID, spark)
             threadList[index].setConversationValue(5)
 
+    #after receiving answer to "What name would you like to use for this template?"
     elif(conversationState == 5):
         if(MatchTemplate(messageText)):
             StoreTemplate(messageText)
@@ -153,6 +170,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
         else:
             SendMessage(SetConversationResponseText(10), roomID, spark)
 
+    #after receiving answer to "Which template would you like to use?"
     elif(conversationState == 6):
         if("new template" in messageText):
             SendMessage(SetConversationResponseText(1), roomID, spark)
@@ -163,6 +181,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
             LoadTemplate(messageText)
             threadList[index].setConversationValue(7)
 
+   #after receiving answer to "Would you like to start a session with this template?"
     elif(conversationState == 7):
         if("no" in messageText):
             SendMessage(SetConversationResponseText(9), roomID, spark)
@@ -173,11 +192,23 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
             DeleteActiveThread(index, roomID)
             StartSession(spark, roomID, room_name)
 
+    elif(conversatoinState == 8):
+        if(!MatchTemplate):
+            threadList[index].setTemplateName(messageText)
+            createTemplate(messageText)
+            SendMessage(SetConversationResponseText(1), roomID, spark)
+            threadList[index].setConversationValue(2)
+
+        else:
+            SendMessage("Sorry, this template name is already in use, please provide a different name")
+
+
+
 
 #used to set the basic text for the next response
 def SetConversationResponseText(conversationValue):
     if(conversationValue == 0):
-        return("Would you like to start a blank session or load a template?")
+        return("Would you like to start a load a template or start a new template?")
 
     elif(conversationValue == 1):
         return("How many questions would you like to include?")
@@ -195,7 +226,7 @@ def SetConversationResponseText(conversationValue):
         return("What name would you like to use for the template?")
 
     elif(conversationValue == 6):
-        return("OK! The template has been saved. Let's start!")
+        return("Thanks for the input! The template has been saved. Let's start!")
 
     elif(conversationValue == 7):
         return("Which template would you like to use?")
@@ -240,7 +271,7 @@ def LoadTemplate(name):
 #placeholder for checking if template exists
 def MatchTemplate(name):
     print("template found")
-    return(True)
+    return(False)
 
 @post('/')
 def index(request):
