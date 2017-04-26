@@ -35,15 +35,16 @@ def pullFromDatabase():
                               host='brainspark.cptvcix7ijfy.us-west-2.rds.amazonaws.com',
                               database='brainspark')
 	mycursor=conn.cursor()
+	results = None
 	sql = "SELECT Question FROM Templates"
 	try:
 		mycursor.execute(sql)
 		results = mycursor.fetchall()
-		print (results)
+		#print (results)
 	except:
 		print "Nothing found"
 	conn.commit()
-	return "true"
+	return results
 
 
 # def createTemplateDB(tempName):
@@ -86,4 +87,4 @@ def sendToTemp(tempName,question):
 # createDatabase("chris")
 #deleteDatabase("ctsioura")
 # sendToDatabase("chris","bla bla bla")
-pullFromDatabase()
+print(pullFromDatabase())
