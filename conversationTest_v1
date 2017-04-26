@@ -193,7 +193,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
             StartSession(spark, roomID, room_name)
 
     elif(conversatoinState == 8):
-        if(!MatchTemplate):
+        if(MatchTemplate):
             threadList[index].setTemplateName(messageText)
             createTemplate(messageText)
             SendMessage(SetConversationResponseText(1), roomID, spark)
@@ -271,7 +271,7 @@ def LoadTemplate(name):
 #placeholder for checking if template exists
 def MatchTemplate(name):
     print("template found")
-    return(False)
+    return(True)
 
 @post('/')
 def index(request):
