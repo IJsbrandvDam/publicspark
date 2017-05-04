@@ -179,9 +179,12 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
             threadList[index].setConversationValue(2)
 
         else:
-            SendMessage(SetConversationResponseText(8), roomID, spark)
-            LoadTemplate(messageText)
-            threadList[index].setConversationValue(7)
+            if(MatchTemplate(messageText) == True):
+                SendMessage(SetConversationResponseText(8), roomID, spark)
+                LoadTemplate(messageText)
+                threadList[index].setConversationValue(7)
+            else:
+                SendMessage(SetConversationResponseText(10), roomID, spark)
 
    #after receiving answer to "Would you like to start a session with this template?"
     elif(conversationState == 7):
@@ -267,8 +270,14 @@ def LoadTemplate(name):
 
 #placeholder for checking if template exists
 def MatchTemplate(name):
-    print("template found")
-    return(True)
+    templateList = pullFromDatabase()
+    if any(name in s for s in templateList):
+        print("template found")
+        return True
+
+    else:
+        print("no match")
+        return False
 
 @post('/')
 def index(request):
