@@ -10,7 +10,7 @@ import mysql.connector
 
 threadList = []
 
-#used to track conversation process
+#object for storing individual conversation threads
 class activeThread():
     def __init__(self, roomID, userID, conValue = 0, repeatCounter = 0, reversedCounter = 0, templateName = ''):
         self.roomID = roomID
@@ -49,7 +49,7 @@ class activeThread():
         self.templateName = name
 
 
-#check if a room already has a thread:
+#check the index of the active thread in this room:
 def GetThreadIndex(messageRoom):
     hasActive = False
     index = -1
@@ -63,7 +63,7 @@ def GetThreadIndex(messageRoom):
 
     return activeIndex
 
-#call after message is "start" has been reveived to start a new conversation thread
+#call after message is "begin" has been reveived to start a new conversation thread
 def CreateActiveThread(roomID, userID, messageText, spark):
     i = GetThreadIndex(roomID)
     if i == None:
@@ -195,7 +195,6 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
             DeleteActiveThread(index, roomID)
             StartSession(spark, roomID, room_name)
 
-
 #used to set the basic text for the next response
 def SetConversationResponseText(conversationValue):
     if(conversationValue == 0):
@@ -214,7 +213,7 @@ def SetConversationResponseText(conversationValue):
         return("OK! Let's start!")
 
     elif(conversationValue == 5):
-        return("What name would you like to use for the template?")
+        return("What name would you like to use for the template? (due to a bug, please make sure the name doesn't include 'end', even in a word like 'agenda'. This will be fixed asap)")
 
     elif(conversationValue == 6):
         return("Thanks for the input! The template has been saved. Let's start!")
@@ -231,11 +230,11 @@ def SetConversationResponseText(conversationValue):
     elif(conversationValue == 10):
         return("I'm sorry, there is no template with that name, please try again")
 
-#placeholder for sending message
+#Send a message using <text> as the content
 def SendMessage(text, room_id, spark):
     spark.messages.create(roomId=room_id, text=text)
 
-#placeholder for starting BrainSpark session
+#Starts the BrainSpark session
 def StartSession(spark, room_id, room_name):
     memberList = spark.memberships.list(roomId=room_id)
     GROUP_MESSAGE = "Brainstorming session for '%s' is starting." % (room_name.title)
@@ -247,11 +246,11 @@ def StartSession(spark, room_id, room_name):
             createDatabase(Membership.personEmail.replace('@cisco.com', '').replace('@gmail.com',''))
     
 
-#placeholder for storing the template
+#placeholder for storing the template <NO LONGER NEEDED?>
 def StoreTemplate(name):
     print("stored template with name " + name)
 
-#placeholder for listing the templates
+#returns a string with a list of all the templates
 def ListTemplates():
     templateList = pullFromDatabase("Templates")
     text = SetConversationResponseText(7)
@@ -262,6 +261,7 @@ def ListTemplates():
 
     return text
 
+#returns a string with a list of all the questions in template <dbName>
 def ListQuestions(dbName):
     templateList = pullFromDatabase(dbName)
     text = SetConversationResponseText(8)
@@ -273,7 +273,7 @@ def ListQuestions(dbName):
     return text
 
 
-#placeholder for checking if template exists
+#Makes sure that template <name> exists in the database
 def MatchTemplate(name):
     templateList = pullFromDatabase("Templates")
     if any(name in s for s in templateList):
@@ -284,6 +284,7 @@ def MatchTemplate(name):
         print("no match")
         return False
 
+#Used for processing the webhooks
 @post('/')
 def index(request):
     spark = CiscoSparkAPI(access_token=bearer) # spark apis
@@ -357,8 +358,8 @@ def index(request):
                 return "false"
     return "true"
 
-#TODO: sendToDatabase(), generateResponse().
 
+#Basic variables
 bot_email = "awstest1@sparkbot.io"
 security_email = "spark-cisco-it-admin-bot@cisco.com"
 bot_name = "awstest1 "
