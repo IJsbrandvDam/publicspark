@@ -276,7 +276,7 @@ def ListQuestions(dbName):
 
 #placeholder for checking if template exists
 def MatchTemplate(name):
-    templateList = pullFromDatabase()
+    templateList = pullFromDatabase("Templates")
     if any(name in s for s in templateList):
         print("template found")
         return True
