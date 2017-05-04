@@ -118,11 +118,18 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
     #after receiving answer to "Would you like to start a load a template or start a new template?"
     elif(conversationState == 1):
         if("new template" in messageText):
-            SendMessage(SetConversationResponseText(5), roomID, spark) #updated from 1
-            threadList[index].setConversationValue(8) #updated from 2
+            SendMessage(SetConversationResponseText(5), roomID, spark)
+            threadList[index].setConversationValue(4)
 
         elif("template" in messageText):
-            SendMessage(SetConversationResponseText(7), roomID, spark) 
+            templateList = pullFromDatabase()
+            text = SetConversationResponseText(7)
+            
+            #list the templates and add them as new lines to the text string
+            for i, s in enumerate(templateList):
+                text.append("\n" + s)
+
+            SendMessage(text, roomID, spark) 
             threadList[index].setConversationValue(6) 
 
         else:
@@ -150,14 +157,16 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
 
     #after receiving answer to "Would you like to save this BrainSpark session as a template?"
     elif(conversationState == 4):
-        if("no" in messageText):
-            SendMessage(SetConversationResponseText(4), roomID, spark)
-            DeleteActiveThread(index, roomID)
-            StartSession(spark, roomID, room_name)
+        if(MatchTemplate):
+            threadList[index].setTemplateName(messageText)
+            print("createTemplate started")
+            createTemplate(messageText)
+            print("createTemplate end")
+            SendMessage(SetConversationResponseText(1), roomID, spark)
+            threadList[index].setConversationValue(2)
 
-        elif("yes" in messageText):
-            SendMessage(SetConversationResponseText(5), roomID, spark)
-            threadList[index].setConversationValue(5)
+        else:
+            SendMessage("Sorry, this template name is already in use, please provide a different name")
 
     #after receiving answer to "What name would you like to use for this template?"
     elif(conversationState == 5):
@@ -191,20 +200,6 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
             DeleteActiveThread(index, roomID)
             StartSession(spark, roomID, room_name)
 
-    elif(conversationState == 8):
-        if(MatchTemplate):
-            threadList[index].setTemplateName(messageText)
-            print("createTemplate started")
-            createTemplate(messageText)
-            print("createTemplate end")
-            SendMessage(SetConversationResponseText(1), roomID, spark)
-            threadList[index].setConversationValue(2)
-
-        else:
-            SendMessage("Sorry, this template name is already in use, please provide a different name")
-
-
-
 
 #used to set the basic text for the next response
 def SetConversationResponseText(conversationValue):
@@ -230,7 +225,7 @@ def SetConversationResponseText(conversationValue):
         return("Thanks for the input! The template has been saved. Let's start!")
 
     elif(conversationValue == 7):
-        return("Which template would you like to use?")
+        return("Which template would you like to use? Pick from the following:")
 
     elif(conversationValue == 8):
         return("Would you like to start a session with this template? It contains the following questions: ")
