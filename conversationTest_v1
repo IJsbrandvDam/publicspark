@@ -71,9 +71,6 @@ class activeThread():
         self.questionCounter = i
         self.reversedQuestionCounter = self.reversedQuestionCounter + 1
 
-    def getUserID(self):
-        return(self.UserID)
-
 
 #check the index of the active thread in this room:
 def GetThreadIndex(messageRoom):
