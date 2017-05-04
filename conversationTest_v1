@@ -175,8 +175,8 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
     #after receiving answer to "Which template would you like to use?"
     elif(conversationState == 6):
         if("new template" in messageText):
-            SendMessage(SetConversationResponseText(1), roomID, spark)
-            threadList[index].setConversationValue(2)
+            SendMessage(SetConversationResponseText(5), roomID, spark)
+            threadList[index].setConversationValue(4)
 
         else:
             if(MatchTemplate(messageText) == True):
