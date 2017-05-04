@@ -64,7 +64,7 @@ class activeThread():
     def getQuestionCounter(self):
         return(self.questionCounter)
 
-    def getReversedQuestionCounter(self)
+    def getReversedQuestionCounter(self):
         return(self.reversedQuestionCounter)
 
     def setQuestionCounter(self, i):
