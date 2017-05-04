@@ -45,8 +45,9 @@ def pullFromDatabase():
 		print "Nothing found"
 	conn.commit()
 
-	print(type(results))
-	return results
+	#print(type(results))
+	print(type(results[0]))
+	return results[0]
 
 
 # def createTemplateDB(tempName):
