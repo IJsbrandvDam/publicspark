@@ -44,6 +44,8 @@ def pullFromDatabase():
 	except:
 		print "Nothing found"
 	conn.commit()
+
+	print(type(results))
 	return results
 
 
