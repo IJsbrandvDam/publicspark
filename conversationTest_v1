@@ -176,7 +176,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
         else:
             SendMessage(SetConversationResponseText(6), roomID, spark)
             DeleteActiveThread(index, roomID)
-            StartSession(spark, roomID, room_name)
+            StartSession(spark, roomID, room_name, threadList[index].getQuestionList())
 
     #after receiving answer to "Would you like to save this BrainSpark session as a template?"
     elif(conversationState == 4):
@@ -195,7 +195,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
             StoreTemplate(messageText)
             SendMessage(SetConversationResponseText(6), roomID, spark)
             DeleteActiveThread(index, roomID)
-            StartSession(spark, roomID, room_name)
+            StartSession(spark, roomID, room_name, threadList[index].getQuestionList())
         else:
             SendMessage(SetConversationResponseText(10), roomID, spark)
 
@@ -222,7 +222,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
         elif("yes" in messageText):
             SendMessage(SetConversationResponseText(4), roomID, spark)
             DeleteActiveThread(index, roomID)
-            StartSession(spark, roomID, room_name)
+            StartSession(spark, roomID, room_name, threadList[index].getQuestionList())
 
 #Used to determine the correct question
 def NextQuestionInSession(index, messageText, spark, roomID):
