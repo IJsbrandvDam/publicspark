@@ -89,10 +89,17 @@ def sendToTemp(tempName,question):
 
 def stripWhiteSpace(string):
 	s = string
+	whitespace = " "
 	for whitespace in s:
 		s.replace(" ", "")
 
 	return s
+
+
+
+
+
+
 
 
 # createDatabase("chris")
