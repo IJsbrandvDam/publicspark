@@ -45,7 +45,12 @@ def pullFromDatabase():
 		print "Nothing found"
 	conn.commit()
 
+	for i, s in results(a)
+		a[i] = s.replace("(u' ", "")
+		a[i] = s.replace("',)")
+
 	return results
+
 
 # def createTemplateDB(tempName):
 # 	conn = mysql.connector.connect(user='brainspark', password='C!sco123',
@@ -87,7 +92,7 @@ def sendToTemp(tempName,question):
 # createDatabase("chris")
 #deleteDatabase("ctsioura")
 # sendToDatabase("chris","bla bla bla")
-x = pullFromDatabase()
+x[] = pullFromDatabase()
 
 print(x[0])
 print(x[1])
