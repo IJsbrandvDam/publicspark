@@ -12,13 +12,17 @@ threadList = []
 
 #object for storing individual conversation threads
 class activeThread():
-    def __init__(self, roomID, userID, conValue = 0, repeatCounter = 0, reversedCounter = 0, templateName = ''):
+    def __init__(self, roomID, userID, startUpThread, conValue = 0, repeatCounter = 0, reversedCounter = 0, templateName = '', questionList = None, questionCounter = 0, reversedQuestionCounter = 0):
         self.roomID = roomID
         self.userID = userID
         self.conValue = conValue
         self.repeatCounter = repeatCounter
         self.reversedCounter = reversedCounter
         self.templateName = templateName
+        self.startUpThread = startUpThread
+        self.questionList = questionList
+        self.questionCounter = questionCounter
+        self.reversedQuestionCounter = reversedQuestionCounter
         
     def setConversationValue(self, i):
         self.conValue = i
@@ -48,6 +52,25 @@ class activeThread():
     def setTemplateName(self, name):
         self.templateName = name
 
+    def getStartUpThread(self):
+        return(self.startUpThread)
+
+    def getQuestionList(self):
+        return(self.questionList)
+
+    def setQuestionList(self, i):
+        self.questionList = i
+
+    def getQuestionCounter(self):
+        return(self.questionCounter)
+
+    def getReversedQuestionCounter(self)
+        return(self.reversedQuestionCounter)
+
+    def setQuestionCounter(self, i):
+        self.questionCounter = i
+        self.reversedQuestionCounter = self.reversedQuestionCounter + 1
+
 
 #check the index of the active thread in this room:
 def GetThreadIndex(messageRoom):
@@ -68,7 +91,7 @@ def CreateActiveThread(roomID, userID, messageText, spark):
     i = GetThreadIndex(roomID)
     if i == None:
         #print("no active thread found, created thread for room " + str(roomID))
-        threadList.append(activeThread(roomID, userID))
+        threadList.append(activeThread(roomID, userID, True))
         i = GetThreadIndex(roomID)
         NextStepInConversation(int(threadList[i].getConversationValue()), i, messageText, roomID, spark)
         #print("created conversation")
@@ -88,13 +111,19 @@ def CheckActiveThread(roomID, userID, messageText, spark):
         print("no active thread found for room " + str(roomID))
 
     else:
-        string1 = str(userID)
-        string2 = threadList[i].getUserID()
-        if string1 == string2:
-            #print("user matches")
-            NextStepInConversation(int(threadList[i].getConversationValue()), i, messageText, roomID, spark)
+        #check if it's the startup thread
+        if(threadList[index].getStartUpThread()):
+            string1 = str(userID)
+            string2 = threadList[i].getUserID()
+            if string1 == string2:
+                NextStepInConversation(int(threadList[i].getConversationValue()), i, messageText, roomID, spark)
+            else:
+                SendMessage("Someone else already initiated a session in this room, please let them finish the initialization before starting a new one", roomID, spark)
+
+        #this means it's a question thread
         else:
-            SendMessage("Someone else already initiated a session in this room, please let them finish the initialization before starting a new one", roomID, spark)
+            #do stuff in the 1:1 rooms
+            NextQuestionInSession(i, messageText, spark, roomID)
 
 #delete conversation thread for roomID with index <index>
 def DeleteActiveThread(index, roomID):
@@ -104,7 +133,7 @@ def DeleteActiveThread(index, roomID):
         del threadList[index]
         print("deleted thread for roomID " + str(roomID))
 
-#Used to determine the flow of conversation
+#Used to determine the flow of conversation during startup process
 def NextStepInConversation(conversationState, index, t, roomID, spark):
     #print("next step called")
     messageText = str(t)
@@ -178,7 +207,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
 
         else:
             if(MatchTemplate(messageText)):
-                text = ListQuestions(messageText)
+                text = ListQuestions(messageText, index)
                 SendMessage(text, roomID, spark)
                 threadList[index].setConversationValue(7)
             else:
@@ -194,6 +223,18 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
             SendMessage(SetConversationResponseText(4), roomID, spark)
             DeleteActiveThread(index, roomID)
             StartSession(spark, roomID, room_name)
+
+#Used to determine the correct question
+def NextQuestionInSession(index, messageText, spark, roomID):
+    i = threadList[index].getQuestionCounter
+
+    if threadList[index].getQuestionCounter() > 0 :
+        text = threadList[index].getQuestionList()[threadList[index].getReversedQuestionCounter()]
+        SendMessage(text, roomID, spark)
+        threadList[index].setQuestionCounter(threadList[index].getQuestionCounter()-1)
+
+    else:
+        SendPersonalMessage("That's all questions, time to start feedback", roomID, spark)
 
 #used to set the basic text for the next response
 def SetConversationResponseText(conversationValue):
@@ -234,8 +275,11 @@ def SetConversationResponseText(conversationValue):
 def SendMessage(text, room_id, spark):
     spark.messages.create(roomId=room_id, text=text)
 
+def SendPersonalMessage(text, personalEmail, spark):
+    spark.messages.create(toPersonEmail=personalEmail, text=text)
+
 #Starts the BrainSpark session
-def StartSession(spark, room_id, room_name):
+def StartSession(spark, room_id, room_name, qList):
     memberList = spark.memberships.list(roomId=room_id)
     GROUP_MESSAGE = "Brainstorming session for '%s' is starting." % (room_name.title)
     spark.messages.create(roomId=room_id, text=GROUP_MESSAGE) # Message the room.
@@ -243,9 +287,9 @@ def StartSession(spark, room_id, room_name):
         if Membership.personEmail != bot_email and Membership.personEmail != security_email: # filter out the bot and cisco security bot, we dont want to send them a message!
             INTRO_MESSAGE = "You have been invited to brainstorming session '%s'. Type 'help' for a brief introduction on how I work! What is your idea?" % (room_name.title)
             spark.messages.create(toPersonEmail=Membership.personEmail, text=INTRO_MESSAGE)
+            threadList.append(activeThread(Membership.personEmail, userID, False, questionList=qList, questionCounter = len(qList)))
             createDatabase(Membership.personEmail.replace('@cisco.com', '').replace('@gmail.com',''))
     
-
 #placeholder for storing the template <NO LONGER NEEDED?>
 def StoreTemplate(name):
     print("stored template with name " + name)
@@ -262,8 +306,9 @@ def ListTemplates():
     return text
 
 #returns a string with a list of all the questions in template <dbName>
-def ListQuestions(dbName):
+def ListQuestions(dbName, i):
     templateList = pullFromDatabase(dbName)
+    threadList[i].setQuestionList(templateList)
     text = SetConversationResponseText(8)
             
         #list the templates and add them as new lines to the text string
@@ -283,6 +328,10 @@ def MatchTemplate(name):
     else:
         print("no match")
         return False
+
+#used to end the session
+def EndSession():
+    print("ending session")
 
 #Used for processing the webhooks
 @post('/')
@@ -335,7 +384,7 @@ def index(request):
         elif message.roomType == "group":
             CheckActiveThread(room_id, message.personEmail, in_message, spark)
 
- # looks for personal messages in 1:1 conversations. These messages need to be saved to our database
+        # looks for personal messages in 1:1 conversations. These messages need to be saved to our database
         else:
 
             if message.roomType == "direct":
@@ -343,6 +392,9 @@ def index(request):
                     spark.messages.create(toPersonEmail=message.personEmail, text="explanation of how this works, what is your idea")
                     return "true"
                 #Temp making sure it tries to do this:
+                
+                CheckActiveThread(message.personEmail, message.personEmail, in_message, spark)
+
                 spark.messages.create(toPersonEmail=message.personEmail, text="processing...")
                 # TODO: Save message. Generate response. Save response. Send response.
                 sendToDatabase(message.personEmail.replace('@cisco.com','').replace('@gmail.com',''), message.text)
