@@ -112,7 +112,7 @@ def CheckActiveThread(roomID, userID, messageText, spark):
 
     else:
         #check if it's the startup thread
-        if(threadList[index].getStartUpThread()):
+        if(threadList[i].getStartUpThread()):
             string1 = str(userID)
             string2 = threadList[i].getUserID()
             if string1 == string2:
