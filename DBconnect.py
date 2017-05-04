@@ -52,21 +52,9 @@ def pullFromDatabase():
 		s = s.replace("',)", "")
 		results[i] = s
 		
-
 	return results
 
-
-# def createTemplateDB(tempName):
-# 	conn = mysql.connector.connect(user='brainspark', password='C!sco123',
-#                               host='brainspark.cptvcix7ijfy.us-west-2.rds.amazonaws.com',
-#                               database='brainspark')
-# 	mycursor=conn.cursor()
-# 	mycursor.execute("CREATE TABLE Templates (Question INT PRIMARY KEY AUTO_INCREMENT, Name TEXT)")
-# 	conn.commit()
-# 	return "true"
-
-
-
+#Create new template in the database
 def createTemplate(tempName):
 	s = stripWhiteSpace(tempName)
 	conn = mysql.connector.connect(user='brainspark', password='C!sco123',
@@ -79,6 +67,7 @@ def createTemplate(tempName):
 	conn.commit()
 	return "true"
 
+#Store questions in the template database
 def sendToTemp(tempName,question):
 	s = stripWhiteSpace(tempName)
 	conn = mysql.connector.connect(user='brainspark', password='C!sco123',
@@ -89,21 +78,7 @@ def sendToTemp(tempName,question):
 	conn.commit()
 	return "true"
 
+#remove the spaces from the template name
 def stripWhiteSpace(stringText):
-	print("begonnen met strippen van: " + stringText)
 	s = stringText.replace(" ", "")
-
-	print("klaar, eindresultaat is: " + s)
 	return s
-
-
-
-
-
-
-
-
-# createDatabase("chris")
-#deleteDatabase("ctsioura")
-# sendToDatabase("chris","bla bla bla")
-
