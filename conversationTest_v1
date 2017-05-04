@@ -153,14 +153,12 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
     elif(conversationState == 4):
         if(MatchTemplate):
             threadList[index].setTemplateName(messageText)
-            print("createTemplate started")
             createTemplate(messageText)
-            print("createTemplate end")
             SendMessage(SetConversationResponseText(1), roomID, spark)
             threadList[index].setConversationValue(2)
 
         else:
-            SendMessage("Sorry, this template name is already in use, please provide a different name")
+            SendMessage("Sorry, this template name is already in use, please provide a different name", roomID, spark)
 
     #after receiving answer to "What name would you like to use for this template?"
     elif(conversationState == 5):
@@ -179,8 +177,9 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
             threadList[index].setConversationValue(4)
 
         else:
-            if(MatchTemplate(messageText) == True):
-                ListQuestions(messageText)
+            if(MatchTemplate(messageText)):
+                text = ListQuestions(messageText)
+                SendMessage(text, roomID, spark)
                 threadList[index].setConversationValue(7)
             else:
                 SendMessage(SetConversationResponseText(10), roomID, spark)
