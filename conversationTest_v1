@@ -12,7 +12,7 @@ threadList = []
 
 #object for storing individual conversation threads
 class activeThread():
-    def __init__(self, roomID, userID, startUpThread, conValue = 0, repeatCounter = 0, reversedCounter = 0, templateName = '', questionList = None, questionCounter = 0, reversedQuestionCounter = 1):
+    def __init__(self, roomID, userID, startUpThread, conValue = 0, repeatCounter = 0, reversedCounter = 0, templateName = '', questionList = None, questionCounter = 0, reversedQuestionCounter = 1, tempName = None):
         self.roomID = roomID
         self.userID = userID
         self.conValue = conValue
@@ -23,6 +23,7 @@ class activeThread():
         self.questionList = questionList
         self.questionCounter = questionCounter
         self.reversedQuestionCounter = reversedQuestionCounter
+        self.tempName = tempName
         
     def setConversationValue(self, i):
         self.conValue = i
@@ -70,6 +71,7 @@ class activeThread():
     def setQuestionCounter(self, i):
         self.questionCounter = i
         self.reversedQuestionCounter = self.reversedQuestionCounter + 1
+
 
 
 #check the index of the active thread in this room:
@@ -175,7 +177,9 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
 
         else:
             SendMessage(SetConversationResponseText(6), roomID, spark)
-            StartSession(spark, roomID, room_name, threadList[index].getQuestionList())
+            templateList = pullFromDatabase(threadList[i].getTemplateName())
+            threadList[i].setQuestionList(templateList)
+            StartSession(spark, roomID, room_name, templateList)
             DeleteActiveThread(index, roomID)
         
 
@@ -289,8 +293,8 @@ def StartSession(spark, room_id, room_name, qList):
     for Membership in memberList: # Message each member in the room individually.
         if Membership.personEmail != bot_email and Membership.personEmail != security_email: # filter out the bot and cisco security bot, we dont want to send them a message!
             INTRO_MESSAGE = "You have been invited to brainstorming session '%s'. Type 'help' for a brief introduction on how I work!" % (room_name.title)
-            spark.messages.create(toPersonEmail=Membership.personEmail, text=INTRO_MESSAGE)
-            text = qList[0]
+            spark.messages.create(toPersonEmail=Membership.personEmail, text=INTRO_MESSAGE)            
+            spark.messages.create(toPersonEmail=Membership.personEmail, text=qList[0])
             threadList.append(activeThread(Membership.personEmail, Membership.personEmail, False, questionList=qList, questionCounter = len(qList)-1))
             createDatabase(Membership.personEmail.replace('@cisco.com', '').replace('@gmail.com',''))
     
