@@ -180,8 +180,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
 
         else:
             if(MatchTemplate(messageText) == True):
-                SendMessage(SetConversationResponseText(8), roomID, spark)
-                LoadTemplate(messageText)
+                ListQuestions(messageText)
                 threadList[index].setConversationValue(7)
             else:
                 SendMessage(SetConversationResponseText(10), roomID, spark)
@@ -255,7 +254,7 @@ def StoreTemplate(name):
 
 #placeholder for listing the templates
 def ListTemplates():
-    templateList = pullFromDatabase()
+    templateList = pullFromDatabase("Templates")
     text = SetConversationResponseText(7)
             
         #list the templates and add them as new lines to the text string
@@ -264,9 +263,16 @@ def ListTemplates():
 
     return text
 
-#placeholder for loading a template
-def LoadTemplate(name):
-    print("template " + name + "has been loaded. It contains the following questions: <list will follow>")
+def ListQuestions(dbName):
+    templateList = pullFromDatabase(dbName)
+    text = SetConversationResponseText(8)
+            
+        #list the templates and add them as new lines to the text string
+    for i, s in enumerate(templateList):
+        text += ("\n" + s)
+
+    return text
+
 
 #placeholder for checking if template exists
 def MatchTemplate(name):
