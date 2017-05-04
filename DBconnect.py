@@ -1,5 +1,4 @@
 import mysql.connector
-import re
 
 def createDatabase(personName):
 	conn = mysql.connector.connect(user='brainspark', password='C!sco123',
@@ -31,13 +30,14 @@ def sendToDatabase(personName,answer):
 	return "true"
 # print(mycursor.fetchall())
 
-def pullFromDatabase():
+def pullFromDatabase(dbName):
+	s = stripWhiteSpace(dbName)
 	conn = mysql.connector.connect(user='brainspark', password='C!sco123',
                               host='brainspark.cptvcix7ijfy.us-west-2.rds.amazonaws.com',
                               database='brainspark')
 	mycursor=conn.cursor()
 	results = None
-	sql = "SELECT Question FROM Templates"
+	sql = "SELECT Question FROM %s" % (s)
 	try:
 		mycursor.execute(sql)
 		results = mycursor.fetchall()
@@ -62,7 +62,7 @@ def createTemplate(tempName):
                               database='brainspark')
 	mycursor=conn.cursor()
 	mycursor.execute("CREATE TABLE %s (nummer INT PRIMARY KEY AUTO_INCREMENT, Question TEXT)" % (s))
-	mycursor.execute("INSERT INTO Templates (Question) VALUES ('%s')" % (tempName))
+	mycursor.execute("INSERT INTO Templates (nummer) VALUES ('%s')" % (tempName))
 	conn.commit()
 	return "true"
 
@@ -81,3 +81,8 @@ def sendToTemp(tempName,question):
 def stripWhiteSpace(stringText):
 	s = stringText.replace(" ", "")
 	return s
+
+print("pulling from Templates:")
+print(pullFromDatabase("Templates"))
+print("pulling from Test Template 1:")
+print(pullFromDatabase("Test Template 1"))
