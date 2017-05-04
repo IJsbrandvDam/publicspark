@@ -122,13 +122,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
             threadList[index].setConversationValue(4)
 
         elif("template" in messageText):
-            templateList = pullFromDatabase()
-            text = SetConversationResponseText(7)
-            
-            #list the templates and add them as new lines to the text string
-            for i, s in enumerate(templateList):
-                text += ("\n" + s)
-
+            text = ListTemplates()
             SendMessage(text, roomID, spark) 
             threadList[index].setConversationValue(6) 
 
@@ -258,7 +252,14 @@ def StoreTemplate(name):
 
 #placeholder for listing the templates
 def ListTemplates():
-    print("placeholder for the template list")
+    templateList = pullFromDatabase()
+    text = SetConversationResponseText(7)
+            
+        #list the templates and add them as new lines to the text string
+    for i, s in enumerate(templateList):
+        text += ("\n" + s)
+
+    return text
 
 #placeholder for loading a template
 def LoadTemplate(name):
