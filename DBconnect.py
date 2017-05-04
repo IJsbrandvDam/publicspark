@@ -81,8 +81,3 @@ def sendToTemp(tempName,question):
 def stripWhiteSpace(stringText):
 	s = stringText.replace(" ", "")
 	return s
-
-print("pulling from Templates:")
-print(pullFromDatabase("Templates"))
-print("pulling from Test Template 1:")
-print(pullFromDatabase("Test Template 1"))
