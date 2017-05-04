@@ -71,6 +71,9 @@ class activeThread():
         self.questionCounter = i
         self.reversedQuestionCounter = self.reversedQuestionCounter + 1
 
+    def getUserID(self):
+        return(self.UserID)
+
 
 #check the index of the active thread in this room:
 def GetThreadIndex(messageRoom):
@@ -93,14 +96,14 @@ def CreateActiveThread(roomID, userID, messageText, spark):
         #print("no active thread found, created thread for room " + str(roomID))
         threadList.append(activeThread(roomID, userID, True))
         i = GetThreadIndex(roomID)
-        NextStepInConversation(int(threadList[i].getConversationValue()), i, messageText, roomID, spark, userID)
+        NextStepInConversation(int(threadList[i].getConversationValue()), i, messageText, roomID, spark)
         #print("created conversation")
     else:
         string1 = str(userID)
         string2 = threadList[i].getUserID()
         if string1 == string2:
             #print("user matches")
-            NextStepInConversation(int(threadList[i].getConversationValue()), i, messageText, roomID, spark, userID)
+            NextStepInConversation(int(threadList[i].getConversationValue()), i, messageText, roomID, spark)
         else:
             SendMessage("Someone else already initiated a session in this room, please let them finish the initialization before starting a new one", roomID, spark)
 
@@ -116,7 +119,7 @@ def CheckActiveThread(roomID, userID, messageText, spark):
             string1 = str(userID)
             string2 = threadList[i].getUserID()
             if string1 == string2:
-                NextStepInConversation(int(threadList[i].getConversationValue()), i, messageText, roomID, spark, userID)
+                NextStepInConversation(int(threadList[i].getConversationValue()), i, messageText, roomID, spark)
             else:
                 SendMessage("Someone else already initiated a session in this room, please let them finish the initialization before starting a new one", roomID, spark)
 
@@ -134,7 +137,7 @@ def DeleteActiveThread(index, roomID):
         print("deleted thread for roomID " + str(roomID))
 
 #Used to determine the flow of conversation during startup process
-def NextStepInConversation(conversationState, index, t, roomID, spark, userID):
+def NextStepInConversation(conversationState, index, t, roomID, spark):
     #print("next step called")
     messageText = str(t)
     room_name = spark.rooms.get(roomID)
@@ -175,7 +178,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark, userID):
 
         else:
             SendMessage(SetConversationResponseText(6), roomID, spark)
-            StartSession(spark, roomID, room_name, threadList[index].getQuestionList(), userID)
+            StartSession(spark, roomID, room_name, threadList[index].getQuestionList())
             DeleteActiveThread(index, roomID)
         
 
@@ -195,7 +198,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark, userID):
         if(MatchTemplate(messageText)):
             StoreTemplate(messageText)
             SendMessage(SetConversationResponseText(6), roomID, spark)
-            StartSession(spark, roomID, room_name, threadList[index].getQuestionList(), userID)
+            StartSession(spark, roomID, room_name, threadList[index].getQuestionList())
             DeleteActiveThread(index, roomID)
         
         else:
@@ -223,7 +226,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark, userID):
 
         elif("yes" in messageText):
             SendMessage(SetConversationResponseText(4), roomID, spark)
-            StartSession(spark, roomID, room_name, threadList[index].getQuestionList(), userID)
+            StartSession(spark, roomID, room_name, threadList[index].getQuestionList())
             DeleteActiveThread(index, roomID)
             
 
@@ -282,7 +285,7 @@ def SendPersonalMessage(text, personalEmail, spark):
     spark.messages.create(toPersonEmail=personalEmail, text=text)
 
 #Starts the BrainSpark session
-def StartSession(spark, room_id, room_name, qList, UserID):
+def StartSession(spark, room_id, room_name, qList):
     memberList = spark.memberships.list(roomId=room_id)
     GROUP_MESSAGE = "Brainstorming session for '%s' is starting." % (room_name.title)
     spark.messages.create(roomId=room_id, text=GROUP_MESSAGE) # Message the room.
@@ -290,7 +293,7 @@ def StartSession(spark, room_id, room_name, qList, UserID):
         if Membership.personEmail != bot_email and Membership.personEmail != security_email: # filter out the bot and cisco security bot, we dont want to send them a message!
             INTRO_MESSAGE = "You have been invited to brainstorming session '%s'. Type 'help' for a brief introduction on how I work! Type start to begin answering questions" % (room_name.title)
             spark.messages.create(toPersonEmail=Membership.personEmail, text=INTRO_MESSAGE)
-            threadList.append(activeThread(Membership.personEmail, userID, False, questionList=qList, questionCounter = len(qList)))
+            threadList.append(activeThread(Membership.personEmail, Membership.personEmail, False, questionList=qList, questionCounter = len(qList)))
             createDatabase(Membership.personEmail.replace('@cisco.com', '').replace('@gmail.com',''))
     
 #placeholder for storing the template <NO LONGER NEEDED?>
