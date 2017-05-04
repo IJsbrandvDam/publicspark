@@ -46,9 +46,10 @@ def pullFromDatabase():
 	conn.commit()
 
 	for i, s in enumerate(results):
-		a[i] = str(a[i])
-		a[i] = s.replace("(u' ", "")
-		a[i] = s.replace("',)")
+		print(s)
+		#results[i] = str(results[i])
+		#results[i] = s.replace("(u' ", "")
+		#results[i] = s.replace("',)")
 
 	return results
 
