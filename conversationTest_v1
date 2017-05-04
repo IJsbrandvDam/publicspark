@@ -177,8 +177,8 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
 
         else:
             SendMessage(SetConversationResponseText(6), roomID, spark)
-            templateList = pullFromDatabase(threadList[i].getTemplateName())
-            threadList[i].setQuestionList(templateList)
+            templateList = pullFromDatabase(threadList[index].getTemplateName())
+            threadList[index].setQuestionList(templateList)
             StartSession(spark, roomID, room_name, templateList)
             DeleteActiveThread(index, roomID)
         
