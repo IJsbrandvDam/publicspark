@@ -73,10 +73,9 @@ def createTemplate(tempName):
                               host='brainspark.cptvcix7ijfy.us-west-2.rds.amazonaws.com',
                               database='brainspark')
 	mycursor=conn.cursor()
-	mycursor.execute("CREATE TABLE '%s' (Question INT PRIMARY KEY AUTO_INCREMENT, Answer TEXT)" % (s))
+	mycursor.execute("CREATE TABLE %s (Question INT PRIMARY KEY AUTO_INCREMENT, Answer TEXT)" % (s))
 	print("gaat nog goed")
 	mycursor.execute("INSERT INTO Templates (Question) VALUES ('%s')" % (tempName))
-	print("dit ook")
 	conn.commit()
 	return "true"
 
@@ -107,8 +106,4 @@ def stripWhiteSpace(stringText):
 # createDatabase("chris")
 #deleteDatabase("ctsioura")
 # sendToDatabase("chris","bla bla bla")
-x = pullFromDatabase()
 
-print(pullFromDatabase())
-print(x[0])
-print(x[1])
