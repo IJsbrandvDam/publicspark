@@ -127,7 +127,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
             
             #list the templates and add them as new lines to the text string
             for i, s in enumerate(templateList):
-                text.append("\n" + s)
+                text += ("\n" + s)
 
             SendMessage(text, roomID, spark) 
             threadList[index].setConversationValue(6) 
