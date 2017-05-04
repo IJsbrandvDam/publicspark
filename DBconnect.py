@@ -71,13 +71,14 @@ def createTemplate(tempName):
                               host='brainspark.cptvcix7ijfy.us-west-2.rds.amazonaws.com',
                               database='brainspark')
 	mycursor=conn.cursor()
-	tempName2 = tempName.replace(" ","")
-	mycursor.execute("CREATE TABLE %s (Question INT PRIMARY KEY AUTO_INCREMENT, Answer TEXT)" % (tempName2))
+	#tempName2 = tempName.replace(" ","")
+	mycursor.execute("CREATE TABLE '%s' (Question INT PRIMARY KEY AUTO_INCREMENT, Answer TEXT)" % (tempName))
 	mycursor.execute("INSERT INTO Templates (Question) VALUES ('%s')" % (tempName))
 	conn.commit()
 	return "true"
 
 def sendToTemp(tempName,question):
+	#tempName2 = tempName.replace(" ","")
 	conn = mysql.connector.connect(user='brainspark', password='C!sco123',
                               host='brainspark.cptvcix7ijfy.us-west-2.rds.amazonaws.com',
                               database='brainspark')
