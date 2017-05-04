@@ -1,4 +1,5 @@
 import mysql.connector
+import string
 
 def createDatabase(personName):
 	conn = mysql.connector.connect(user='brainspark', password='C!sco123',
@@ -87,12 +88,14 @@ def sendToTemp(tempName,question):
 	conn.commit()
 	return "true"
 
-def stripWhiteSpace(string):
-	s = string
+def stripWhiteSpace(stringText):
+	print("begonnen met strippen van: " + stringText)
+	s = stringText
 	whitespace = " "
-	for whitespace in s:
+	for whitespace in string.s:
 		s.replace(" ", "")
 
+	print("klaar, eindresultaat is: " + s)
 	return s
 
 
