@@ -87,7 +87,7 @@ def sendToTemp(tempName,question):
 # createDatabase("chris")
 #deleteDatabase("ctsioura")
 # sendToDatabase("chris","bla bla bla")
-x[] = pullFromDatabase()
+x = pullFromDatabase()
 
 print(x[0])
 print(x[1])
