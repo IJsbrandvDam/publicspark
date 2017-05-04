@@ -61,9 +61,8 @@ def createTemplate(tempName):
                               host='brainspark.cptvcix7ijfy.us-west-2.rds.amazonaws.com',
                               database='brainspark')
 	mycursor=conn.cursor()
-	mycursor.execute("CREATE TABLE %s (Question INT PRIMARY KEY AUTO_INCREMENT, Answer TEXT)" % (s))
-	print("gaat nog goed")
-	mycursor.execute("INSERT INTO Templates (Question) VALUES ('%s')" % (tempName))
+	mycursor.execute("CREATE TABLE %s (nummer INT PRIMARY KEY AUTO_INCREMENT, Question TEXT)" % (s))
+	mycursor.execute("INSERT INTO Templates (nummer) VALUES ('%s')" % (tempName))
 	conn.commit()
 	return "true"
 
@@ -74,7 +73,7 @@ def sendToTemp(tempName,question):
                               host='brainspark.cptvcix7ijfy.us-west-2.rds.amazonaws.com',
                               database='brainspark')
 	mycursor=conn.cursor()
-	mycursor.execute("INSERT INTO %s (Answer) VALUES ('%s')" % (s,question))
+	mycursor.execute("INSERT INTO %s (Question) VALUES ('%s')" % (s,question))
 	conn.commit()
 	return "true"
 
