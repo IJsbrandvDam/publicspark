@@ -233,7 +233,7 @@ def NextQuestionInSession(index, messageText, spark, roomID):
 
     if threadList[index].getQuestionCounter() > 0 :
         text = threadList[index].getQuestionList()[threadList[index].getReversedQuestionCounter()]
-        SendMessage(text, roomID, spark)
+        SendPersonalMessage(text, roomID, spark)
         threadList[index].setQuestionCounter(threadList[index].getQuestionCounter()-1)
 
     else:
