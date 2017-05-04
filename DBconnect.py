@@ -1,4 +1,5 @@
 import mysql.connector
+import re
 
 def createDatabase(personName):
 	conn = mysql.connector.connect(user='brainspark', password='C!sco123',
@@ -72,7 +73,7 @@ def createTemplate(tempName):
                               host='brainspark.cptvcix7ijfy.us-west-2.rds.amazonaws.com',
                               database='brainspark')
 	mycursor=conn.cursor()
-	mycursor.execute("CREATE TABLE %s (Question INT PRIMARY KEY AUTO_INCREMENT, Answer TEXT)" % (s))
+	mycursor.execute("CREATE TABLE '%s' (Question INT PRIMARY KEY AUTO_INCREMENT, Answer TEXT)" % (s))
 	mycursor.execute("INSERT INTO Templates (Question) VALUES ('%s')" % (tempName))
 	conn.commit()
 	return "true"
@@ -89,10 +90,7 @@ def sendToTemp(tempName,question):
 
 def stripWhiteSpace(stringText):
 	print("begonnen met strippen van: " + stringText)
-	s = stringText
-	whitespace = " "
-	for whitespace in s:
-		s.replace(" ", "")
+	s = stringText.replace(" ", "")
 
 	print("klaar, eindresultaat is: " + s)
 	return s
