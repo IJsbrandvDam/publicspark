@@ -49,7 +49,7 @@ def pullFromDatabase():
 		print(results[i])
 		s = str(s)
 		s = s.replace("(u' ", "")
-		s = s.replace("',)")
+		s = s.replace("',)", "")
 		print(s)
 		results[i] = s
 		print(results[i])
