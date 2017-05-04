@@ -72,7 +72,7 @@ def createTemplate(tempName):
                               database='brainspark')
 	mycursor=conn.cursor()
 	tempName2 = tempName.replace(" ","")
-	mycursor.execute("CREATE TABLE %d (Question INT PRIMARY KEY AUTO_INCREMENT, Answer TEXT)" % (tempName2))
+	mycursor.execute("CREATE TABLE %s (Question INT PRIMARY KEY AUTO_INCREMENT, Answer TEXT)" % (tempName2))
 	mycursor.execute("INSERT INTO Templates (Question) VALUES ('%s')" % (tempName))
 	conn.commit()
 	return "true"
