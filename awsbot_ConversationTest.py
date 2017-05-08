@@ -256,6 +256,12 @@ def NextQuestionInSession(index, messageText, spark, roomID):
 
 def feedbackSession(index, messageText, spark, roomID):
     i = threadList[threadList[index].getParentIndex()].getGroupMembers()
+    for a, s in enumerate(i):
+        s = str(s)
+        s = s.replace("(u'", "")
+        s = s.replace("',)", "")
+        i[a] = s
+    i = i.remove(roomID)
     SendPersonalMessage(str(i), roomID, spark)
 
 
