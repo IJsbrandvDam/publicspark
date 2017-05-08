@@ -310,7 +310,7 @@ def StartSession(spark, room_id, room_name, qList, index):
     memberList = spark.memberships.list(roomId=room_id)
     GROUP_MESSAGE = "Brainstorming session for '%s' is starting." % (room_name.title)
     spark.messages.create(roomId=room_id, text=GROUP_MESSAGE) # Message the room.
-    groupMembers[] = None
+    groupMembers = []
     for Membership in memberList: # Message each member in the room individually.
         if Membership.personEmail != bot_email and Membership.personEmail != security_email: # filter out the bot and cisco security bot, we dont want to send them a message!
             INTRO_MESSAGE = "You have been invited to brainstorming session '%s'. Type 'help' for a brief introduction on how I work!" % (room_name.title)
