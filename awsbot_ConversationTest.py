@@ -253,6 +253,7 @@ def NextQuestionInSession(index, messageText, spark, roomID):
     else:
         SendPersonalMessage("That's all questions, time to start feedback", roomID, spark)
         feedbackSession(index, messageText, spark, roomID)
+        setQuestionCounter(threadList[index], 100)
 
 def feedbackSession(index, messageText, spark, roomID):
     i = threadList[threadList[index].getParentIndex()].getGroupMembers()
@@ -263,7 +264,7 @@ def feedbackSession(index, messageText, spark, roomID):
         i[a] = s
     i.remove(roomID)
     SendPersonalMessage(str(i), roomID, spark)
-    
+
 
 
 
