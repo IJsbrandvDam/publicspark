@@ -54,6 +54,30 @@ def pullFromDatabase(dbName):
 		
 	return results
 
+def pullAnswersFromDatabase(dbName):
+	s = stripWhiteSpace(dbName)
+	conn = mysql.connector.connect(user='brainspark', password='C!sco123',
+                              host='brainspark.cptvcix7ijfy.us-west-2.rds.amazonaws.com',
+                              database='brainspark')
+	mycursor=conn.cursor()
+	results = None
+	sql = "SELECT Answer FROM %s" % (s)
+	try:
+		mycursor.execute(sql)
+		results = mycursor.fetchall()
+		#print (results)
+	except:
+		print "Nothing found"
+	conn.commit()
+
+	for i, s in enumerate(results):
+		s = str(s)
+		s = s.replace("(u'", "")
+		s = s.replace("',)", "")
+		results[i] = s
+		
+	return results
+
 #Create new template in the database
 def createTemplate(tempName):
 	s = stripWhiteSpace(tempName)
