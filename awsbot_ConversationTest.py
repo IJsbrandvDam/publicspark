@@ -269,14 +269,11 @@ def feedbackSession(index, messageText, spark, roomID):
         s = s.replace("@cisco.com", "")
         s = s.replace("@gmail.com", "")
         i[a] = s
+    print(threadList[index].getQuestionCounter())
     dbName = i[threadList[index].getQuestionCounter() - 100]
     text = pullFromDatabase(dbName)
     SendPersonalMessage(str(text), roomID, spark)
     threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
-    
-
-
-
 
 
 #used to set the basic text for the next response
