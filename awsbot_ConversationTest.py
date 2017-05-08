@@ -378,7 +378,7 @@ def index(request):
         # conditional to end the test
         # same idea as above but then for the word end
         # should also post the final idea into the group room
-        elif message.roomType == "group" and "end" in in_message:
+        elif message.roomType == "group" and "end session" in in_message:
             memberList = spark.memberships.list(roomId=room_id)
             GROUP_MESSAGE = "Brainstorming session for '%s' is ending." % (room_name.title)
             spark.messages.create(roomId=room_id, text=GROUP_MESSAGE) # Message the room.
