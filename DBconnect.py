@@ -63,7 +63,7 @@ def createTemplate(tempName):
 	mycursor=conn.cursor()
 	print("created tempalte with name: " + s)
 	mycursor.execute("CREATE TABLE %s (nummer INT PRIMARY KEY AUTO_INCREMENT, Question TEXT)" % (s))
-	mycursor.execute("INSERT INTO Templates (nummer) VALUES ('%s')" % (tempName))
+	mycursor.execute("INSERT INTO Templates (Question) VALUES ('%s')" % (tempName))
 	conn.commit()
 	return "true"
 
