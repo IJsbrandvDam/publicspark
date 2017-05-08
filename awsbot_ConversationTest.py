@@ -296,7 +296,9 @@ def StartSession(spark, room_id, room_name, qList):
             spark.messages.create(toPersonEmail=Membership.personEmail, text=INTRO_MESSAGE)            
             spark.messages.create(toPersonEmail=Membership.personEmail, text=qList[0])
             threadList.append(activeThread(Membership.personEmail, Membership.personEmail, False, questionList=qList, questionCounter = len(qList)-1))
+            print("dit gaat goed")
             createDatabase(Membership.personEmail.replace('@cisco.com', '').replace('@gmail.com',''))
+            print("als alles goed is zou er nu een db gemaakt moeten zijn")
     
 #placeholder for storing the template <NO LONGER NEEDED?>
 def StoreTemplate(name):
@@ -401,14 +403,15 @@ def index(request):
                     return "true"
                 #Temp making sure it tries to do this:
                 
-                CheckActiveThread(message.personEmail, message.personEmail, in_message, spark)
+                
 
                 # TODO: Save message. Generate response. Save response. Send response.
                 sendToDatabase(message.personEmail.replace('@cisco.com','').replace('@gmail.com',''), message.text)
+                CheckActiveThread(message.personEmail, message.personEmail, in_message, spark)
                 # Database definition: Message, From, To.
-                response = generateResponse(message.text, message.personEmail)
+                #response = generateResponse(message.text, message.personEmail)
                 #sendToDatabase(response, bot_email, message.personEmail)
-                spark.messages.create(toPersonEmail=message.personEmail, text=response)
+                #spark.messages.create(toPersonEmail=message.personEmail, text=response)
 
             else:
                 # So not a group message invoking the bot.
