@@ -86,7 +86,7 @@ class activeThread():
 
     def KillChildren(self):
         if self.groupMembers != None:
-            for i, s in enumerate(templateList):
+            for i, s in enumerate(self.groupMembers):
                 q = GetThreadIndex(s)
                 DeleteActiveThread(q, s)
 
