@@ -5,7 +5,7 @@ import requests
 import sys
 import os
 from generateResponse import generateResponse
-from DBconnect import sendToDatabase, pullFromDatabase, createDatabase, deleteDatabase, createTemplate, sendToTemp
+from DBconnect import sendToDatabase, pullFromDatabase, createDatabase, deleteDatabase, createTemplate, sendToTemp, pullAnswersFromDatabase
 import mysql.connector
 
 threadList = []
@@ -288,7 +288,7 @@ def feedbackSession(index, messageText, spark, roomID):
         i[a] = s
     print(threadList[index].getQuestionCounter())
     dbName = i[threadList[index].getQuestionCounter() - 100]
-    text = pullFromDatabase(dbName)
+    text = pullAnswersFromDatabase(dbName)
     SendPersonalMessage(str(text), roomID, spark)
     threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
 
