@@ -84,6 +84,17 @@ class activeThread():
     def getParentIndex(self):
         return(self.parentIndex)
 
+    def KillChildren(self):
+        if self.groupMembers != None:
+            for i, s in enumerate(templateList):
+                q = GetThreadIndex(s)
+                DeleteActiveThread(q, s)
+
+            print("deleted child threads")
+        else:
+            print("no children found")
+
+
 
 
 
@@ -145,6 +156,7 @@ def DeleteActiveThread(index, roomID):
     if index == None:
         print("unable to delete active thread for " + str(roomID) + " because no thread exists")
     else:
+        threadList[index].KillChildren()
         del threadList[index]
         print("deleted thread for roomID " + str(roomID))
 
@@ -261,7 +273,12 @@ def NextQuestionInSession(index, messageText, spark, roomID):
 
 def feedbackSession(index, messageText, spark, roomID):
     i = threadList[threadList[index].getParentIndex()].getGroupMembers()
-    i.remove(roomID)
+    print(i)
+    print(roomID)
+    try:
+        i.remove(roomID)
+    except ValueError:
+        pass # do nothing
     for a, s in enumerate(i):
         s = str(s)
         s = s.replace("(u'", "")
@@ -414,6 +431,8 @@ def index(request):
         elif message.roomType == "group" and "end session" in in_message:
             memberList = spark.memberships.list(roomId=room_id)
             GROUP_MESSAGE = "Brainstorming session for '%s' is ending." % (room_name.title)
+            index = GetThreadIndex(room_id)
+            DeleteActiveThread(index, room_id)
             spark.messages.create(roomId=room_id, text=GROUP_MESSAGE) # Message the room.
             for Membership in memberList: # Message each member in the room individually.
                 if Membership.personEmail != bot_email and Membership.personEmail != security_email:
