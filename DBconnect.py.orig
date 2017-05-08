@@ -1,0 +1,96 @@
+import mysql.connector
+
+def createDatabase(personName):
+	conn = mysql.connector.connect(user='brainspark', password='C!sco123',
+                              host='brainspark.cptvcix7ijfy.us-west-2.rds.amazonaws.com',
+                              database='brainspark')
+	mycursor=conn.cursor()
+	mycursor.execute("CREATE TABLE %s (Question INT PRIMARY KEY AUTO_INCREMENT, Answer TEXT)" % (personName))
+	conn.commit()
+	return "true"
+
+
+def deleteDatabase(personName):
+	conn = mysql.connector.connect(user='brainspark', password='C!sco123',
+                              host='brainspark.cptvcix7ijfy.us-west-2.rds.amazonaws.com',
+                              database='brainspark')
+	mycursor=conn.cursor()
+	mycursor.execute("DROP TABLE IF EXISTS %s" % (personName))
+	conn.commit()
+	return "true"
+
+
+def sendToDatabase(personName,answer):
+	conn = mysql.connector.connect(user='brainspark', password='C!sco123',
+                              host='brainspark.cptvcix7ijfy.us-west-2.rds.amazonaws.com',
+                              database='brainspark')
+	mycursor=conn.cursor()
+	mycursor.execute("INSERT INTO %s (Answer) VALUES ('%s')" % (personName,answer))
+	conn.commit()
+	return "true"
+# print(mycursor.fetchall())
+
+def pullFromDatabase(message, personEmail):
+	conn = mysql.connector.connect(user='brainspark', password='C!sco123',
+                              host='brainspark.cptvcix7ijfy.us-west-2.rds.amazonaws.com',
+                              database='brainspark')
+	mycursor=conn.cursor()
+	sql = "SELECT * FROM ideas WHERE q2 = '%s'" % ("test@cisco.com")
+	try:
+		mycursor.execute(sql)
+		results = mycursor.fetchall()
+		print (results)
+	except:
+		print "Nothing found"
+	conn.commit()
+	return "true"
+
+<<<<<<< HEAD
+# createDatabase("chris")
+# deleteDatabase("ctsioura")
+# sendToDatabase("chris","bla bla bla")
+# pullFromDatabase("message", "personEmail")
+=======
+
+# def createTemplateDB(tempName):
+# 	conn = mysql.connector.connect(user='brainspark', password='C!sco123',
+#                               host='brainspark.cptvcix7ijfy.us-west-2.rds.amazonaws.com',
+#                               database='brainspark')
+# 	mycursor=conn.cursor()
+# 	mycursor.execute("CREATE TABLE Templates (Question INT PRIMARY KEY AUTO_INCREMENT, Name TEXT)")
+# 	conn.commit()
+# 	return "true"
+
+
+
+def createTemplate(tempName):
+	conn = mysql.connector.connect(user='brainspark', password='C!sco123',
+                              host='brainspark.cptvcix7ijfy.us-west-2.rds.amazonaws.com',
+                              database='brainspark')
+	mycursor=conn.cursor()
+	mycursor.execute("CREATE TABLE %s (Question INT PRIMARY KEY AUTO_INCREMENT, Answer TEXT)" % (tempName))
+	mycursor.execute("INSERT INTO Templates (Name) VALUES ('%s')" % (tempName))
+	conn.commit()
+	return "true"
+
+def sendToTemp(tempName,question):
+	conn = mysql.connector.connect(user='brainspark', password='C!sco123',
+                              host='brainspark.cptvcix7ijfy.us-west-2.rds.amazonaws.com',
+                              database='brainspark')
+	mycursor=conn.cursor()
+	mycursor.execute("INSERT INTO %s (Answer) VALUES ('%s')" % (tempName,question))
+	conn.commit()
+	return "true"
+
+
+
+
+
+
+
+
+# createDatabase("chris")
+deleteDatabase("ctsioura")
+# sendToDatabase("chris","bla bla bla")
+# pullFromDatabase("message", "personEmail")
+>>>>>>> 14206702f88547c0243502ba8408b37d465fdcec
