@@ -261,8 +261,10 @@ def feedbackSession(index, messageText, spark, roomID):
         s = s.replace("(u'", "")
         s = s.replace("',)", "")
         i[a] = s
-    i = i.remove(roomID)
+    j = i.remove(roomID)
     SendPersonalMessage(str(i), roomID, spark)
+    SendPersonalMessage(str(j), roomID, spark)
+    SendPersonalMessage(str(roomID), roomID, spark)
 
 
 
