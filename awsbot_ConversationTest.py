@@ -261,7 +261,7 @@ def SetConversationResponseText(conversationValue):
         return("OK! Let's start!")
 
     elif(conversationValue == 5):
-        return("What name would you like to use for the template? (due to a bug, please make sure the name doesn't include 'end', even in a word like 'agenda'. This will be fixed asap)")
+        return("What name would you like to use for the template?")
 
     elif(conversationValue == 6):
         return("Thanks for the input! The template has been saved. Let's start!")
