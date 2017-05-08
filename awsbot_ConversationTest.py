@@ -245,7 +245,11 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
 def NextQuestionInSession(index, messageText, spark, roomID):
     i = threadList[index].getQuestionCounter
 
-    if threadList[index].getQuestionCounter() > 0 :
+    if threadList[index].getQuestionCounter() > 99:
+        feedbackSession(index, messageText, spark, roomID)
+
+
+    elif threadList[index].getQuestionCounter() > 0 :
         text = threadList[index].getQuestionList()[threadList[index].getReversedQuestionCounter()]
         SendPersonalMessage(text, roomID, spark)
         threadList[index].setQuestionCounter(threadList[index].getQuestionCounter()-1)
@@ -257,13 +261,19 @@ def NextQuestionInSession(index, messageText, spark, roomID):
 
 def feedbackSession(index, messageText, spark, roomID):
     i = threadList[threadList[index].getParentIndex()].getGroupMembers()
+    i.remove(roomID)
     for a, s in enumerate(i):
         s = str(s)
         s = s.replace("(u'", "")
         s = s.replace("',)", "")
+        s = s.replace("@cisco.com", "")
+        s = s.replace("@gmail.com", "")
         i[a] = s
-    i.remove(roomID)
-    SendPersonalMessage(str(i), roomID, spark)
+    dbName = i[threadList[index].getQuestionCounter() - 100]
+    text = pullFromDatabase(dbName)
+    SendPersonalMessage(str(text), roomID, spark)
+    threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
+    
 
 
 
