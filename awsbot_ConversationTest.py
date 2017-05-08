@@ -12,7 +12,7 @@ threadList = []
 
 #object for storing individual conversation threads
 class activeThread():
-    def __init__(self, roomID, userID, startUpThread, conValue = 0, repeatCounter = 0, reversedCounter = 0, templateName = '', questionList = None, questionCounter = 0, reversedQuestionCounter = 1, tempName = None):
+    def __init__(self, roomID, userID, startUpThread, conValue = 0, repeatCounter = 0, reversedCounter = 0, templateName = '', questionList = None, questionCounter = 0, reversedQuestionCounter = 1, tempName = None, groupMembers = None, parentIndex = None):
         self.roomID = roomID
         self.userID = userID
         self.conValue = conValue
@@ -24,6 +24,9 @@ class activeThread():
         self.questionCounter = questionCounter
         self.reversedQuestionCounter = reversedQuestionCounter
         self.tempName = tempName
+        self.groupMembers = groupMembers
+        self.parentIndex = parentIndex
+
         
     def setConversationValue(self, i):
         self.conValue = i
@@ -71,6 +74,16 @@ class activeThread():
     def setQuestionCounter(self, i):
         self.questionCounter = i
         self.reversedQuestionCounter = self.reversedQuestionCounter + 1
+
+    def getGroupMembers(self):
+        return(self.groupMembers)
+
+    def setGroupMembers(self,members):
+        self.groupMembers=members
+
+    def getParentIndex(self):
+        return(self.parentIndex)
+
 
 
 
@@ -179,7 +192,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
             SendMessage(SetConversationResponseText(6), roomID, spark)
             templateList = pullFromDatabase(threadList[index].getTemplateName())
             threadList[index].setQuestionList(templateList)
-            StartSession(spark, roomID, room_name, templateList)
+            StartSession(spark, roomID, room_name, templateList, index)
             DeleteActiveThread(index, roomID)
         
 
@@ -199,7 +212,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
         if(MatchTemplate(messageText)):
             StoreTemplate(messageText)
             SendMessage(SetConversationResponseText(6), roomID, spark)
-            StartSession(spark, roomID, room_name, threadList[index].getQuestionList())
+            StartSession(spark, roomID, room_name, threadList[index].getQuestionList(), index)
             DeleteActiveThread(index, roomID)
         
         else:
@@ -227,7 +240,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
 
         elif("yes" in messageText):
             SendMessage(SetConversationResponseText(4), roomID, spark)
-            StartSession(spark, roomID, room_name, threadList[index].getQuestionList())
+            StartSession(spark, roomID, room_name, threadList[index].getQuestionList(),index)
             DeleteActiveThread(index, roomID)
             
 
@@ -242,6 +255,13 @@ def NextQuestionInSession(index, messageText, spark, roomID):
 
     else:
         SendPersonalMessage("That's all questions, time to start feedback", roomID, spark)
+        feedbackSession(index, messageText, spark, roomID)
+
+def feedbackSession(index, messageText, spark, roomID):
+    i = threadList[threadList[index].getParentIndex()].getGroupMembers()
+    SendPersonalMessage(i, roomID, spark)
+
+
 
 #used to set the basic text for the next response
 def SetConversationResponseText(conversationValue):
@@ -286,22 +306,23 @@ def SendPersonalMessage(text, personalEmail, spark):
     spark.messages.create(toPersonEmail=personalEmail, text=text)
 
 #Starts the BrainSpark session
-def StartSession(spark, room_id, room_name, qList):
+def StartSession(spark, room_id, room_name, qList, index):
     memberList = spark.memberships.list(roomId=room_id)
     GROUP_MESSAGE = "Brainstorming session for '%s' is starting." % (room_name.title)
     spark.messages.create(roomId=room_id, text=GROUP_MESSAGE) # Message the room.
+    groupMembers[] = None
     for Membership in memberList: # Message each member in the room individually.
         if Membership.personEmail != bot_email and Membership.personEmail != security_email: # filter out the bot and cisco security bot, we dont want to send them a message!
             INTRO_MESSAGE = "You have been invited to brainstorming session '%s'. Type 'help' for a brief introduction on how I work!" % (room_name.title)
             createDatabase(Membership.personEmail.replace('@cisco.com', '').replace('@gmail.com',''))
-
+            groupMembers.append(Membership.personEmail)
             spark.messages.create(toPersonEmail=Membership.personEmail, text=INTRO_MESSAGE)            
             spark.messages.create(toPersonEmail=Membership.personEmail, text=qList[0])
-            threadList.append(activeThread(Membership.personEmail, Membership.personEmail, False, questionList=qList, questionCounter = len(qList)-1))
+            threadList.append(activeThread(Membership.personEmail, Membership.personEmail, False, questionList=qList, questionCounter = len(qList)-1, parentIndex = index))
             #print("dit gaat goed")
             #createDatabase(Membership.personEmail.replace('@cisco.com', '').replace('@gmail.com',''))
             #print("als alles goed is zou er nu een db gemaakt moeten zijn")
-    
+    threadList[index].setGroupMembers(groupMembers)
 #placeholder for storing the template <NO LONGER NEEDED?>
 def StoreTemplate(name):
     print("stored template with name " + name)
