@@ -193,7 +193,7 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
             templateList = pullFromDatabase(threadList[index].getTemplateName())
             threadList[index].setQuestionList(templateList)
             StartSession(spark, roomID, room_name, templateList, index)
-            DeleteActiveThread(index, roomID)
+
         
 
     #after receiving answer to "Would you like to save this BrainSpark session as a template?"
@@ -213,7 +213,6 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
             StoreTemplate(messageText)
             SendMessage(SetConversationResponseText(6), roomID, spark)
             StartSession(spark, roomID, room_name, threadList[index].getQuestionList(), index)
-            DeleteActiveThread(index, roomID)
         
         else:
             SendMessage(SetConversationResponseText(10), roomID, spark)
@@ -236,12 +235,10 @@ def NextStepInConversation(conversationState, index, t, roomID, spark):
     elif(conversationState == 7):
         if("no" in messageText):
             SendMessage(SetConversationResponseText(9), roomID, spark)
-            DeleteActiveThread(index, roomID)
 
         elif("yes" in messageText):
             SendMessage(SetConversationResponseText(4), roomID, spark)
             StartSession(spark, roomID, room_name, threadList[index].getQuestionList(),index)
-            DeleteActiveThread(index, roomID)
             
 
 #Used to determine the correct question
