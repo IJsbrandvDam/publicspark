@@ -31,6 +31,8 @@ class activeThread():
         self.score = []
         self.finishedCounter = finishedCounter
         self.finished = finished
+        self.averageScore = 0
+        self.winningDB = ""
 
         
     def setConversationValue(self, i):
@@ -89,12 +91,15 @@ class activeThread():
     def getParentIndex(self):
         return(self.parentIndex)
 
-    def KillChildren(self):
+    def KillChildren(self, spark):
         if self.groupMembers != None:
             for i, s in enumerate(self.groupMembers):
-                print("average score for " + s + " is <nog in te voegen>")
                 q = GetThreadIndex(s)
-                DeleteActiveThread(q, s)
+                r = threadList[q].getRoomID()
+
+                AverageScoreUser(r)
+                
+                DeleteActiveThread(q, s, spark)
 
         else:
             print("no children found")
@@ -123,8 +128,30 @@ class activeThread():
     def getFinished(self):
         return(self.finished)
 
+    def setAverageScore(self, i):
+        self.averageScore = i
+
+    def getAverageScore(self):
+        return(self.averageScore)
+
+    def getWinningDB(self):
+        return(self.winningDB)
+
+    def setWinningDB(self, i):
+        self.winningDB = i
 
 
+def AverageScoreUser(roomID):
+    i = GetThreadIndex(roomID)
+    score = threadList[i].getScore()
+    a = sum(score)/len(score)
+
+    if threadList[threadList[index].getParentIndex()].getAverageScore() < a:      
+        db = copy.copy(roomID)
+        db.replace("@cisco.com", "")
+        db.replace("@gmail.com", "")
+        threadList[threadList[index].getParentIndex()].setAverageScore(a)
+        threadList[threadList[index].getParentIndex()].setWinningDB(db)
 
 
 
@@ -190,12 +217,12 @@ def CleanFeedback(feedbackList, amount):
     return(text)            
             
 #delete conversation thread for roomID with index <index>
-def DeleteActiveThread(index, roomID):
+def DeleteActiveThread(index, roomID, spark):
     if index == None:
         print("unable to delete active thread for " + str(roomID) + " because no thread exists")
     else:
-        threadList[index].KillChildren()
-        print("beste idee komt hier")
+        threadList[index].KillChildren(spark)
+        SendMessage(str(threadList[index].getWinningDB), roomID, spark)
         del threadList[index]
         print("deleted thread for roomID " + str(roomID))
 
@@ -521,7 +548,7 @@ def QuitSession(spark, roomID):
     memberList = spark.memberships.list(roomId=roomID)
     GROUP_MESSAGE = "Brainstorming session for '%s' is ending." % (room_name.title)
     index = GetThreadIndex(roomID)
-    DeleteActiveThread(index, roomID)
+    DeleteActiveThread(index, roomID, spark)
     spark.messages.create(roomId=roomID, text=GROUP_MESSAGE) # Message the room.
     for Membership in memberList: # Message each member in the room individually.
         if Membership.personEmail != bot_email and Membership.personEmail != security_email:
@@ -568,7 +595,7 @@ def index(request):
             memberList = spark.memberships.list(roomId=room_id)
             GROUP_MESSAGE = "Brainstorming session for '%s' is ending." % (room_name.title)
             index = GetThreadIndex(room_id)
-            DeleteActiveThread(index, room_id)
+            DeleteActiveThread(index, room_id, spark)
             spark.messages.create(roomId=room_id, text=GROUP_MESSAGE) # Message the room.
             for Membership in memberList: # Message each member in the room individually.
                 if Membership.personEmail != bot_email and Membership.personEmail != security_email:
