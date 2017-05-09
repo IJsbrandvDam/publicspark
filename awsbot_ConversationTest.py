@@ -13,7 +13,7 @@ threadList = []
 
 #object for storing individual conversation threads
 class activeThread():
-    def __init__(self, roomID, userID, startUpThread, conValue = 0, repeatCounter = 0, reversedCounter = 0, templateName = '', questionList = None, questionCounter = 0, reversedQuestionCounter = 1, tempName = None, groupMembers = None, parentIndex = None, feedbackCounter = 0):
+    def __init__(self, roomID, userID, startUpThread, conValue = 0, repeatCounter = 0, reversedCounter = 0, templateName = '', questionList = None, questionCounter = 0, reversedQuestionCounter = 1, tempName = None, groupMembers = None, parentIndex = None, feedbackCounter = 0, finishedCounter = 0):
         self.roomID = roomID
         self.userID = userID
         self.conValue = conValue
@@ -29,6 +29,8 @@ class activeThread():
         self.parentIndex = parentIndex
         self.feedbackCounter = feedbackCounter
         self.score = []
+        self.finishedCounter = finishedCounter
+        self.finished = False
 
         
     def setConversationValue(self, i):
@@ -90,10 +92,11 @@ class activeThread():
     def KillChildren(self):
         if self.groupMembers != None:
             for i, s in enumerate(self.groupMembers):
+                print("average score for " + s + " is <nog in te voegen>")
                 q = GetThreadIndex(s)
                 DeleteActiveThread(q, s)
 
-            print("deleted child threads")
+            print("average score for " + s + )
         else:
             print("no children found")
 
@@ -108,6 +111,18 @@ class activeThread():
 
     def setScore(self,i):
         self.score.append(i)
+
+    def setFinishedCounter(self,i):
+        self.finishedCounter = i
+
+    def getFinishedCounter(self):
+        return(self.finishedCounter)
+
+    def setFinished(self, i):
+        self.Finished = i
+
+    def getFinished(self):
+        self.Finished
 
 
 
@@ -181,6 +196,7 @@ def DeleteActiveThread(index, roomID):
         print("unable to delete active thread for " + str(roomID) + " because no thread exists")
     else:
         threadList[index].KillChildren()
+        print("beste idee komt hier")
         del threadList[index]
         print("deleted thread for roomID " + str(roomID))
 
@@ -282,7 +298,8 @@ def NextQuestionInSession(index, messageText, spark, roomID):
     i = threadList[index].getQuestionCounter
 
     if threadList[index].getQuestionCounter() > 99:
-        feedbackSession(index, messageText, spark, roomID)
+        if threadList[index].getFinished() == False:
+            feedbackSession(index, messageText, spark, roomID)
 
 
     elif threadList[index].getQuestionCounter() > 0 :
@@ -295,7 +312,8 @@ def NextQuestionInSession(index, messageText, spark, roomID):
         threadList[index].setQuestionCounter(100)
         feedbackCounter = threadList[threadList[index].getParentIndex()].getFeedbackCounter()
         threadList[threadList[index].getParentIndex()].setFeedbackCounter(feedbackCounter+1)
-        feedbackSession(index, messageText, spark, roomID)
+        if threadList[index].getFinished() == False:
+            feedbackSession(index, messageText, spark, roomID)
 
 
 def feedbackSession(index, messageText, spark, roomID):
@@ -362,6 +380,9 @@ def feedbackSession(index, messageText, spark, roomID):
                     SendPersonalMessage(CleanFeedback(text, l), roomID, spark)
                     threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
                 else:
+                    finishedCounter = threadList[threadList[index].getParentIndex()].getFinishedCounter()
+                    threadList[threadList[index].getParentIndex()].setFinishedCounter(finishedCounter+1)
+                    threadList[index].setFinished(True)
                     EndSession()
             else:   
                 text = pullAnswersFromDatabase(dbName)
@@ -375,8 +396,15 @@ def feedbackSession(index, messageText, spark, roomID):
             threadList[GetThreadIndex(cleanGroupUsers[threadList[index].getQuestionCounter() - 101])].setScore(messageText)
         except ValueError:
             pass
-
+        finishedCounter = threadList[threadList[index].getParentIndex()].getFinishedCounter()
+        threadList[threadList[index].getParentIndex()].setFinishedCounter(finishedCounter+1)
+        threadList[index].setFinished(True)
         EndSession()
+
+    finishedCounter = threadList[threadList[index].getParentIndex()].getFinishedCounter()
+    if finishedCounter == len(i):
+        QuitSession(spark, roomID)
+            
 
 
 #used to set the basic text for the next response
@@ -481,6 +509,25 @@ def MatchTemplate(name):
 #used to end the session
 def EndSession():
     print("ending session")
+
+def QuitSession(spark, room_id):
+    room_name = spark.rooms.get(room_id) # retrieve room information to get the room name
+    personName = spark.people.list()
+
+
+    memberList = spark.memberships.list(roomId=room_id)
+    GROUP_MESSAGE = "Brainstorming session for '%s' is ending." % (room_name.title)
+    index = GetThreadIndex(room_id)
+    DeleteActiveThread(index, room_id)
+    spark.messages.create(roomId=room_id, text=GROUP_MESSAGE) # Message the room.
+    for Membership in memberList: # Message each member in the room individually.
+        if Membership.personEmail != bot_email and Membership.personEmail != security_email:
+            END_MESSAGE = "Brainstorming session '%s' is ending." % (room_name.title)
+            spark.messages.create(toPersonEmail=Membership.personEmail, text=END_MESSAGE)
+            deleteDatabase(Membership.personEmail.replace('@cisco.com', '').replace('@gmail.com',''))
+    #TODO: Send the best idea to the group chat.
+    BEST_IDEA = "The best idea." #getBestIdea(room_id)
+    spark.messages.create(roomId=room_id, text=BEST_IDEA)
 
 #Used for processing the webhooks
 @post('/')
