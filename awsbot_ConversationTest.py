@@ -276,7 +276,6 @@ def feedbackSession(index, messageText, spark, roomID):
     print(i)
 
     q = i
-    q.remove(roomID)
 
     for a, s in enumerate(q):
         s = str(s)
@@ -285,6 +284,7 @@ def feedbackSession(index, messageText, spark, roomID):
         s = s.replace("@cisco.com", "")
         s = s.replace("@gmail.com", "")
         q[a] = s
+        
     print(threadList[index].getQuestionCounter())
     dbName = q[threadList[index].getQuestionCounter() - 100]
     
