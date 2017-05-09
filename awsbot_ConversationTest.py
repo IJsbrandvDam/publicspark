@@ -144,6 +144,17 @@ class activeThread():
 def AverageScoreUser(roomID):
     i = GetThreadIndex(roomID)
     score = threadList[i].getScore()
+
+    for l, s in enumerate(q):
+        print("score = " + s)
+        try:
+            s = int(s)
+        except:
+            s = 0
+        s = int(s)
+        print("score als int is " + s)
+        q[l] = s
+
     a = sum(score)/len(score)
 
     if threadList[threadList[index].getParentIndex()].getAverageScore() < a:      
