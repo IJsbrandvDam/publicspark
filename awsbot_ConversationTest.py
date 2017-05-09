@@ -345,7 +345,7 @@ def feedbackSession(index, messageText, spark, roomID):
     elif feedbackCounter > len(i):
         if threadList[threadList[index].getQuestionCounter() - 101] >= 0:
             threadList[threadList[index].getQuestionCounter() - 101].setScore(messageText)
-            
+        print(threadList[threadList[index].getQuestionCounter() - 101].getScore())
         if dbName in roomID:
             threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
             dbName = cleanGroupUsers[threadList[index].getQuestionCounter() - 100]
