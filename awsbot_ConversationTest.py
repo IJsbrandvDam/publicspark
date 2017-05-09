@@ -114,7 +114,7 @@ class activeThread():
         return(self.score)
 
     def setScore(self,i):
-        self.score.append(i)
+        self.score.append(int(i))
 
     def setFinishedCounter(self,i):
         self.finishedCounter = i
