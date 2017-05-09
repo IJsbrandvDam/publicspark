@@ -96,7 +96,6 @@ class activeThread():
                 q = GetThreadIndex(s)
                 DeleteActiveThread(q, s)
 
-            print("average score for " + s + )
         else:
             print("no children found")
 
