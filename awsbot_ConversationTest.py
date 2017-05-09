@@ -334,37 +334,46 @@ def feedbackSession(index, messageText, spark, roomID):
     print(cleanGroupUsers)
 
     print(threadList[index].getQuestionCounter())
-    dbName = cleanGroupUsers[threadList[index].getQuestionCounter() - 100]
-    feedbackCounter = threadList[threadList[index].getParentIndex()].getFeedbackCounter()
 
-    if feedbackCounter == len(i):
-        for a, s in enumerate(cleanGroupEmails):
-            print(str(s))
-            SendPersonalMessage("All answers are in, ready to start with feedback?", str(s), spark)
-        threadList[threadList[index].getParentIndex()].setFeedbackCounter(feedbackCounter+1)
-    elif feedbackCounter > len(i):
+    if threadList[index].getQuestionCounter() - 100 < len(cleanGroupUsers):
+        dbName = cleanGroupUsers[threadList[index].getQuestionCounter() - 100]
+
+        feedbackCounter = threadList[threadList[index].getParentIndex()].getFeedbackCounter()
+
+        if feedbackCounter == len(i):
+            for a, s in enumerate(cleanGroupEmails):
+                print(str(s))
+                SendPersonalMessage("All answers are in, ready to start with feedback?", str(s), spark)
+            threadList[threadList[index].getParentIndex()].setFeedbackCounter(feedbackCounter+1)
+        elif feedbackCounter > len(i):
+            try:
+                threadList[GetThreadIndex(cleanGroupUsers[threadList[index].getQuestionCounter() - 101])].setScore(messageText)
+            except ValueError:
+                pass
+            print(str(threadList[GetThreadIndex(cleanGroupUsers[threadList[index].getQuestionCounter() - 101])].getScore()))
+            # if threadList[threadList[index].getQuestionCounter() - 101] >= 0:
+            #     threadList[threadList[index].getQuestionCounter() - 101].setScore(messageText)
+            # print(threadList[threadList[index].getQuestionCounter() - 101].getScore())
+            if dbName in roomID:
+                threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
+                dbName = cleanGroupUsers[threadList[index].getQuestionCounter() - 100]
+                text = pullAnswersFromDatabase(dbName)
+                SendPersonalMessage(CleanFeedback(text, l), roomID, spark)
+                threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
+            else:   
+                text = pullAnswersFromDatabase(dbName)
+                SendPersonalMessage(CleanFeedback(text, l), roomID, spark)
+                threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
+        else:
+            return
+    
+    else:
         try:
             threadList[GetThreadIndex(cleanGroupUsers[threadList[index].getQuestionCounter() - 101])].setScore(messageText)
         except ValueError:
             pass
-        print(str(threadList[GetThreadIndex(cleanGroupUsers[threadList[index].getQuestionCounter() - 101])].getScore()))
-        # if threadList[threadList[index].getQuestionCounter() - 101] >= 0:
-        #     threadList[threadList[index].getQuestionCounter() - 101].setScore(messageText)
-        # print(threadList[threadList[index].getQuestionCounter() - 101].getScore())
-        if dbName in roomID:
-            threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
-            dbName = cleanGroupUsers[threadList[index].getQuestionCounter() - 100]
-            text = pullAnswersFromDatabase(dbName)
-            SendPersonalMessage(CleanFeedback(text, l), roomID, spark)
-            threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
-        else:   
-            text = pullAnswersFromDatabase(dbName)
-            SendPersonalMessage(CleanFeedback(text, l), roomID, spark)
-            threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
-    else:
-        return
 
-
+        EndSession()
 
 
 #used to set the basic text for the next response
