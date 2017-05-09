@@ -156,8 +156,9 @@ def AverageScoreUser(roomID):
         score[l] = s
 
     a = sum(score)/len(score)
+    print(threadList[index].getParentIndex())
 
-    if threadList[threadList[index].getParentIndex()].getAverageScore() < a:      
+    if threadList[int(threadList[index].getParentIndex())].getAverageScore() < a:      
         db = copy.copy(roomID)
         db.replace("@cisco.com", "")
         db.replace("@gmail.com", "")
