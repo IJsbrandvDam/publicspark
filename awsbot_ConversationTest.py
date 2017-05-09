@@ -295,15 +295,16 @@ def feedbackSession(index, messageText, spark, roomID):
         q[a] = s
 
     cleanGroupEmails = q
+    w=q
     print(cleanGroupEmails)
 
-    for a, s in enumerate(q):
+    for a, s in enumerate(w):
         s = str(s)
         s = s.replace("@cisco.com", "")
         s = s.replace("@gmail.com", "")
-        q[a] = s
+        w[a] = s
     
-    cleanGroupUsers = q
+    cleanGroupUsers = w
     print(cleanGroupUsers)
 
     print(threadList[index].getQuestionCounter())
