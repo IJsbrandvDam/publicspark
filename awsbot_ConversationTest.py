@@ -220,7 +220,8 @@ def CheckActiveThread(roomID, userID, messageText, spark):
             NextQuestionInSession(i, messageText, spark, roomID)
 
 def CleanFeedback(feedbackList, amount):
-    text = "Please provide feedback to the following answers (score between 1 and 10):"
+    #text = "Please provide feedback to the following answers (score between 1 and 10):"
+    text = ""
     for i, s in enumerate(feedbackList):
         if i < amount:
             text += ("\n \n" + s)
@@ -428,6 +429,7 @@ def feedbackSession(index, messageText, spark, roomID):
                 if threadList[index].getQuestionCounter() - 100 < len(cleanGroupUsers):
                     dbName = cleanGroupUsers[threadList[index].getQuestionCounter() - 100]
                     text = pullAnswersFromDatabase(dbName)
+                    SendPersonalMessage("Please provide feedback to the following answers (score between 1 and 10):", roomID, spark)
                     SendPersonalMessage(CleanFeedback(text, l), roomID, spark)
                     threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
                 else:
@@ -437,6 +439,7 @@ def feedbackSession(index, messageText, spark, roomID):
                     EndSession()
             else:   
                 text = pullAnswersFromDatabase(dbName)
+                SendPersonalMessage("Please provide feedback to the following answers (score between 1 and 10):", roomID, spark)
                 SendPersonalMessage(CleanFeedback(text, l), roomID, spark)
                 threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
         else:
@@ -571,7 +574,7 @@ def QuitSession(spark, roomID):
     #GROUP_MESSAGE = "Brainstorming session for '%s' is ending." % (room_name.title)
     index = GetThreadIndex(roomID)
     DeleteActiveThread(index, roomID, spark)
-    spark.messages.create(roomId=roomID, text=GROUP_MESSAGE) # Message the room.
+    #spark.messages.create(roomId=roomID, text=GROUP_MESSAGE) # Message the room.
     for Membership in memberList: # Message each member in the room individually.
         if Membership.personEmail != bot_email and Membership.personEmail != security_email:
             END_MESSAGE = "Brainstorming session '%s' is ending." % (room_name.title)
