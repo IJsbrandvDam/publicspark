@@ -122,7 +122,7 @@ def GetThreadIndex(messageRoom):
 
     for objects in threadList:
         index = index + 1
-        if objects.getRoomID() == messageRoom:
+        if messageRoom in objects.getRoomID():
             hasActive = True
             activeIndex = index
 
@@ -343,9 +343,11 @@ def feedbackSession(index, messageText, spark, roomID):
             SendPersonalMessage("All answers are in, ready to start with feedback?", str(s), spark)
         threadList[threadList[index].getParentIndex()].setFeedbackCounter(feedbackCounter+1)
     elif feedbackCounter > len(i):
-        if threadList[threadList[index].getQuestionCounter() - 101] >= 0:
-            threadList[threadList[index].getQuestionCounter() - 101].setScore(messageText)
-        print(threadList[threadList[index].getQuestionCounter() - 101].getScore())
+        threadList[GetThreadIndex(dbName)].setScore(messageText)
+        print(threadList[GetThreadIndex(dbName)].getScore)
+        # if threadList[threadList[index].getQuestionCounter() - 101] >= 0:
+        #     threadList[threadList[index].getQuestionCounter() - 101].setScore(messageText)
+        # print(threadList[threadList[index].getQuestionCounter() - 101].getScore())
         if dbName in roomID:
             threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
             dbName = cleanGroupUsers[threadList[index].getQuestionCounter() - 100]
