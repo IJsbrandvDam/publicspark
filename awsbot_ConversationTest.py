@@ -294,8 +294,8 @@ def feedbackSession(index, messageText, spark, roomID):
     i = copy.copy(threadList[threadList[index].getParentIndex()].getGroupMembers())
     print(i)
 
-    q = i
-    w = i
+    q = copy.copy(i)
+    w = copy.copy(i)
 
     for a, s in enumerate(q):
         s = str(s)
