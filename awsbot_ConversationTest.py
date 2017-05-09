@@ -145,7 +145,7 @@ def AverageScoreUser(roomID):
     i = GetThreadIndex(roomID)
     score = threadList[i].getScore()
 
-    for l, s in enumerate(q):
+    for l, s in enumerate(score):
         print("score = " + s)
         try:
             s = int(s)
@@ -153,7 +153,7 @@ def AverageScoreUser(roomID):
             s = 0
         s = int(s)
         print("score als int is " + s)
-        q[l] = s
+        score[l] = s
 
     a = sum(score)/len(score)
 
