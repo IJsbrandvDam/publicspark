@@ -236,7 +236,7 @@ def DeleteActiveThread(index, roomID, spark):
         if "@" in roomID:
             print("personal message")
         else:
-            SendMessage(str(threadList[index].getWinningDB), roomID, spark)
+            SendMessage(str(threadList[index].getWinningDB()), roomID, spark)
         del threadList[index]
         print("deleted thread for roomID " + str(roomID))
 
