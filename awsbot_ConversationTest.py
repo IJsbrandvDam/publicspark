@@ -283,6 +283,13 @@ def NextQuestionInSession(index, messageText, spark, roomID):
 
 
 def feedbackSession(index, messageText, spark, roomID):
+    i = None
+    q = None
+    w = None
+    cleanGroupEmails = None
+    cleanGroupUsers = None
+
+
     i = threadList[threadList[index].getParentIndex()].getGroupMembers()
     print(i)
 
@@ -320,6 +327,7 @@ def feedbackSession(index, messageText, spark, roomID):
             SendPersonalMessage("All answers are in, ready to start with feedback?", str(s), spark)
         threadList[threadList[index].getParentIndex()].setFeedbackCounter(feedbackCounter+1)
     elif feedbackCounter > len(i):
+
         if dbName in roomID:
             threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
             dbName = cleanGroupUsers[threadList[index].getQuestionCounter() - 100]
