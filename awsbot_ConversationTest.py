@@ -12,7 +12,7 @@ threadList = []
 
 #object for storing individual conversation threads
 class activeThread():
-    def __init__(self, roomID, userID, startUpThread, conValue = 0, repeatCounter = 0, reversedCounter = 0, templateName = '', questionList = None, questionCounter = 0, reversedQuestionCounter = 1, tempName = None, groupMembers = None, parentIndex = None):
+    def __init__(self, roomID, userID, startUpThread, conValue = 0, repeatCounter = 0, reversedCounter = 0, templateName = '', questionList = None, questionCounter = 0, reversedQuestionCounter = 1, tempName = None, groupMembers = None, parentIndex = None, feedbackCounter = 0):
         self.roomID = roomID
         self.userID = userID
         self.conValue = conValue
@@ -26,6 +26,7 @@ class activeThread():
         self.tempName = tempName
         self.groupMembers = groupMembers
         self.parentIndex = parentIndex
+        self.feedbackCounter = feedbackCounter
 
         
     def setConversationValue(self, i):
@@ -93,6 +94,13 @@ class activeThread():
             print("deleted child threads")
         else:
             print("no children found")
+
+    def getFeedbackCounter(self):
+        return(self.feedbackCounter)
+
+    def setFeedbackCounter(self, i):
+        self.feedbackCounter = i
+
 
 
 
@@ -267,9 +275,12 @@ def NextQuestionInSession(index, messageText, spark, roomID):
         threadList[index].setQuestionCounter(threadList[index].getQuestionCounter()-1)
 
     else:
-        SendPersonalMessage("That's all questions, time to start feedback", roomID, spark)
+        SendPersonalMessage("That's all questions, please wait until everyone finished!", roomID, spark)
         threadList[index].setQuestionCounter(100)
+        feedbackCounter = threadList[threadList[index].getParentIndex()].getFeedbackCounter()
+        threadList[threadList[index].getParentIndex()].setFeedbackCounter(feedbackCounter+1)
         feedbackSession(index, messageText, spark, roomID)
+
 
 def feedbackSession(index, messageText, spark, roomID):
     i = threadList[threadList[index].getParentIndex()].getGroupMembers()
@@ -287,7 +298,13 @@ def feedbackSession(index, messageText, spark, roomID):
         
     print(threadList[index].getQuestionCounter())
     dbName = q[threadList[index].getQuestionCounter() - 100]
-    
+    feedbackCounter = threadList[threadList[index].getParentIndex()].getFeedbackCounter()
+
+    if feedbackCounter == len(i):
+        for a, s in enumerate(i):
+            SendPersonalMessage("All answers are in, ready to start with feedback?", s, spark)
+            
+
     if dbName in roomID:
         threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
         dbName = q[threadList[index].getQuestionCounter() - 100]
