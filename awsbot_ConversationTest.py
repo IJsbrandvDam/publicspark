@@ -274,7 +274,7 @@ def NextQuestionInSession(index, messageText, spark, roomID):
 def feedbackSession(index, messageText, spark, roomID):
     i = threadList[threadList[index].getParentIndex()].getGroupMembers()
     print(i)
-    print(roomID)
+
     q = i
     q.remove(roomID)
 
@@ -287,9 +287,18 @@ def feedbackSession(index, messageText, spark, roomID):
         q[a] = s
     print(threadList[index].getQuestionCounter())
     dbName = q[threadList[index].getQuestionCounter() - 100]
-    text = pullAnswersFromDatabase(dbName)
-    SendPersonalMessage(str(text), roomID, spark)
-    threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
+    
+    if dbName in roomID:
+        threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
+        dbName = q[threadList[index].getQuestionCounter() - 100]
+        text = pullAnswersFromDatabase(dbName)
+        SendPersonalMessage(str(text), roomID, spark)
+        threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
+    
+    else:    
+        text = pullAnswersFromDatabase(dbName)
+        SendPersonalMessage(str(text), roomID, spark)
+        threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
 
 
 #used to set the basic text for the next response
