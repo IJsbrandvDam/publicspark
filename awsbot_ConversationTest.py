@@ -238,8 +238,8 @@ def DeleteActiveThread(index, roomID, spark):
         else:
             SendMessage("Brainstorming session is ending, the following has been selected as the best answer:", roomID, spark)
             db = copy.copy(str(threadList[index].getWinningDB()))
-            db.replace("@gmail.com", "")
-            db.replace("@cisco.com", "")
+            db = db.replace("@gmail.com", "")
+            db = db.replace("@cisco.com", "")
             l = len(threadList[index].getQuestionList())
             print("db is :" + str(db))
             text = pullAnswersFromDatabase(db)
