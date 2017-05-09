@@ -513,15 +513,17 @@ def MatchTemplate(name):
 def EndSession():
     print("ending session")
 
-def QuitSession(spark, room_id):
+def QuitSession(spark, roomID):
+    webhook = json.loads(request.body) # get payload from webhook
+    room_id = webhook['data']['roomId'] # get room id from message
     room_name = spark.rooms.get(room_id) # retrieve room information to get the room name
     personName = spark.people.list()
 
 
     memberList = spark.memberships.list(roomId=room_id)
     GROUP_MESSAGE = "Brainstorming session for '%s' is ending." % (room_name.title)
-    index = GetThreadIndex(room_id)
-    DeleteActiveThread(index, room_id)
+    index = GetThreadIndex(roomID)
+    DeleteActiveThread(index, roomID)
     spark.messages.create(roomId=room_id, text=GROUP_MESSAGE) # Message the room.
     for Membership in memberList: # Message each member in the room individually.
         if Membership.personEmail != bot_email and Membership.personEmail != security_email:
