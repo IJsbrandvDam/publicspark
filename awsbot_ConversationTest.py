@@ -356,10 +356,13 @@ def feedbackSession(index, messageText, spark, roomID):
             # print(threadList[threadList[index].getQuestionCounter() - 101].getScore())
             if dbName in roomID:
                 threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
-                dbName = cleanGroupUsers[threadList[index].getQuestionCounter() - 100]
-                text = pullAnswersFromDatabase(dbName)
-                SendPersonalMessage(CleanFeedback(text, l), roomID, spark)
-                threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
+                if threadList[index].getQuestionCounter() - 100 < len(cleanGroupUsers):
+                    dbName = cleanGroupUsers[threadList[index].getQuestionCounter() - 100]
+                    text = pullAnswersFromDatabase(dbName)
+                    SendPersonalMessage(CleanFeedback(text, l), roomID, spark)
+                    threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
+                else:
+                    EndSession()
             else:   
                 text = pullAnswersFromDatabase(dbName)
                 SendPersonalMessage(CleanFeedback(text, l), roomID, spark)
