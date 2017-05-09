@@ -344,7 +344,7 @@ def feedbackSession(index, messageText, spark, roomID):
         threadList[threadList[index].getParentIndex()].setFeedbackCounter(feedbackCounter+1)
     elif feedbackCounter > len(i):
         threadList[GetThreadIndex(dbName)].setScore(messageText)
-        print(threadList[GetThreadIndex(dbName)].getScore)
+        print(str(threadList[GetThreadIndex(dbName)].getScore))
         # if threadList[threadList[index].getQuestionCounter() - 101] >= 0:
         #     threadList[threadList[index].getQuestionCounter() - 101].setScore(messageText)
         # print(threadList[threadList[index].getQuestionCounter() - 101].getScore())
