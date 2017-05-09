@@ -548,8 +548,8 @@ def index(request):
 
 
 #Basic variables
-bot_email = "awstest1@sparkbot.io"
+bot_email = "brainspark@sparkbot.io"
 security_email = "spark-cisco-it-admin-bot@cisco.com"
-bot_name = "awstest1 "
-bearer = "MjViMjgwMzQtMGY5MC00MGYwLTk2YmUtNGQwOTc5OTVkODc4ODc3ZDRkY2MtZDA3"
+bot_name = "BrainSpark"
+bearer = "MGI0MWMyMDktMGIyZC00MzAxLWEyYzAtN2U2ZTA5YjQ5N2RkZTE0NjZkODgtMTJh"
 run_itty(server='wsgiref', host='0.0.0.0', port=10010)
