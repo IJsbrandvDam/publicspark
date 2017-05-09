@@ -156,14 +156,13 @@ def AverageScoreUser(roomID):
         score[l] = s
 
     a = sum(score)/len(score)
-    print(threadList[index].getParentIndex())
 
-    if threadList[int(threadList[index].getParentIndex())].getAverageScore() < a:      
+    if threadList[int(threadList[i].getParentIndex())].getAverageScore() < a:      
         db = copy.copy(roomID)
         db.replace("@cisco.com", "")
         db.replace("@gmail.com", "")
-        threadList[threadList[index].getParentIndex()].setAverageScore(a)
-        threadList[threadList[index].getParentIndex()].setWinningDB(db)
+        threadList[threadList[i].getParentIndex()].setAverageScore(a)
+        threadList[threadList[i].getParentIndex()].setWinningDB(db)
 
 
 
