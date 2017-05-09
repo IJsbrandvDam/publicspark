@@ -121,7 +121,7 @@ class activeThread():
         self.finished = i
 
     def getFinished(self):
-        self.finished
+        return(self.finished)
 
 
 
@@ -311,7 +311,9 @@ def NextQuestionInSession(index, messageText, spark, roomID):
         threadList[index].setQuestionCounter(100)
         feedbackCounter = threadList[threadList[index].getParentIndex()].getFeedbackCounter()
         threadList[threadList[index].getParentIndex()].setFeedbackCounter(feedbackCounter+1)
+        print(str(threadList[index].getFinished()))
         if threadList[index].getFinished() == False:
+            print("passed line 315")
             feedbackSession(index, messageText, spark, roomID)
 
 
