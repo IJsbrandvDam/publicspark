@@ -354,10 +354,11 @@ def feedbackSession(index, messageText, spark, roomID):
 
     if threadList[index].getQuestionCounter() - 100 < len(cleanGroupUsers):
         dbName = cleanGroupUsers[threadList[index].getQuestionCounter() - 100]
-
+        print("passed line 357")
         feedbackCounter = threadList[threadList[index].getParentIndex()].getFeedbackCounter()
 
         if feedbackCounter == len(i):
+            print("passed line 361")
             for a, s in enumerate(cleanGroupEmails):
                 print(str(s))
                 SendPersonalMessage("All answers are in, ready to start with feedback?", str(s), spark)
@@ -388,6 +389,7 @@ def feedbackSession(index, messageText, spark, roomID):
                 SendPersonalMessage(CleanFeedback(text, l), roomID, spark)
                 threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
         else:
+            print("passed line 392")
             return
     
     else:
