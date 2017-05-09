@@ -13,7 +13,7 @@ threadList = []
 
 #object for storing individual conversation threads
 class activeThread():
-    def __init__(self, roomID, userID, startUpThread, conValue = 0, repeatCounter = 0, reversedCounter = 0, templateName = '', questionList = None, questionCounter = 0, reversedQuestionCounter = 1, tempName = None, groupMembers = None, parentIndex = None, feedbackCounter = 0, finishedCounter = 0, finished = False):
+    def __init__(self, roomID, userID, startUpThread, conValue = 0, repeatCounter = 0, reversedCounter = 0, templateName = '', questionList = None, questionCounter = 0, reversedQuestionCounter = 1, tempName = None, groupMembers = None, parentIndex = 0, feedbackCounter = 0, finishedCounter = 0, finished = False):
         self.roomID = roomID
         self.userID = userID
         self.conValue = conValue
@@ -129,7 +129,7 @@ class activeThread():
         return(self.finished)
 
     def setAverageScore(self, i):
-        self.averageScore = i
+        self.averageScore = int(i)
 
     def getAverageScore(self):
         return(self.averageScore)
