@@ -303,19 +303,22 @@ def feedbackSession(index, messageText, spark, roomID):
     if feedbackCounter == len(i):
         for a, s in enumerate(i):
             SendPersonalMessage("All answers are in, ready to start with feedback?", s, spark)
-            
+        threadList[threadList[index].getParentIndex()].setFeedbackCounter(feedbackCounter+1)
+    elif feedbackCounter > len(i):
+        if dbName in roomID:
+            threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
+            dbName = q[threadList[index].getQuestionCounter() - 100]
+            text = pullAnswersFromDatabase(dbName)
+            SendPersonalMessage(str(text), roomID, spark)
+            threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
+        else:   
+            text = pullAnswersFromDatabase(dbName)
+            SendPersonalMessage(str(text), roomID, spark)
+            threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
+    else:
+        return
 
-    if dbName in roomID:
-        threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
-        dbName = q[threadList[index].getQuestionCounter() - 100]
-        text = pullAnswersFromDatabase(dbName)
-        SendPersonalMessage(str(text), roomID, spark)
-        threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
-    
-    else:    
-        text = pullAnswersFromDatabase(dbName)
-        SendPersonalMessage(str(text), roomID, spark)
-        threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
+
 
 
 #used to set the basic text for the next response
