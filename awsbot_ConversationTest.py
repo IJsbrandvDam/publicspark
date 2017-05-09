@@ -343,8 +343,11 @@ def feedbackSession(index, messageText, spark, roomID):
             SendPersonalMessage("All answers are in, ready to start with feedback?", str(s), spark)
         threadList[threadList[index].getParentIndex()].setFeedbackCounter(feedbackCounter+1)
     elif feedbackCounter > len(i):
-        threadList[GetThreadIndex(dbName)].setScore(messageText)
-        print(str(threadList[GetThreadIndex(dbName)].getScore()))
+        try:
+            threadList[GetThreadIndex(cleanGroupUsers[threadList[index].getQuestionCounter() - 101])].setScore(messageText)
+        except ValueError:
+            pass
+        print(str(threadList[GetThreadIndex(cleanGroupUsers[threadList[index].getQuestionCounter() - 101])].getScore()))
         # if threadList[threadList[index].getQuestionCounter() - 101] >= 0:
         #     threadList[threadList[index].getQuestionCounter() - 101].setScore(messageText)
         # print(threadList[threadList[index].getQuestionCounter() - 101].getScore())
