@@ -406,7 +406,7 @@ def feedbackSession(index, messageText, spark, roomID):
 
     finishedCounter = threadList[threadList[index].getParentIndex()].getFinishedCounter()
     if finishedCounter == len(i):
-        QuitSession(spark, roomID)
+        QuitSession(spark, threadList[threadList[index].getParentIndex()].getRoomID())
             
 
 
@@ -514,17 +514,15 @@ def EndSession():
     print("ending session")
 
 def QuitSession(spark, roomID):
-    webhook = json.loads(request.body) # get payload from webhook
-    room_id = webhook['data']['roomId'] # get room id from message
-    room_name = spark.rooms.get(room_id) # retrieve room information to get the room name
+    room_name = spark.rooms.get(roomID) # retrieve room information to get the room name
     personName = spark.people.list()
 
 
-    memberList = spark.memberships.list(roomId=room_id)
+    memberList = spark.memberships.list(roomId=roomID)
     GROUP_MESSAGE = "Brainstorming session for '%s' is ending." % (room_name.title)
     index = GetThreadIndex(roomID)
     DeleteActiveThread(index, roomID)
-    spark.messages.create(roomId=room_id, text=GROUP_MESSAGE) # Message the room.
+    spark.messages.create(roomId=roomID, text=GROUP_MESSAGE) # Message the room.
     for Membership in memberList: # Message each member in the room individually.
         if Membership.personEmail != bot_email and Membership.personEmail != security_email:
             END_MESSAGE = "Brainstorming session '%s' is ending." % (room_name.title)
@@ -532,7 +530,7 @@ def QuitSession(spark, roomID):
             deleteDatabase(Membership.personEmail.replace('@cisco.com', '').replace('@gmail.com',''))
     #TODO: Send the best idea to the group chat.
     BEST_IDEA = "The best idea." #getBestIdea(room_id)
-    spark.messages.create(roomId=room_id, text=BEST_IDEA)
+    spark.messages.create(roomId=roomID, text=BEST_IDEA)
 
 #Used for processing the webhooks
 @post('/')
