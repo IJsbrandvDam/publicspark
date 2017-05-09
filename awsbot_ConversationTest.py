@@ -275,19 +275,18 @@ def feedbackSession(index, messageText, spark, roomID):
     i = threadList[threadList[index].getParentIndex()].getGroupMembers()
     print(i)
     print(roomID)
-    try:
-        i.remove(roomID)
-    except ValueError:
-        pass # do nothing
-    for a, s in enumerate(i):
+    q = i
+    q.remove(roomID)
+
+    for a, s in enumerate(q):
         s = str(s)
         s = s.replace("(u'", "")
         s = s.replace("',)", "")
         s = s.replace("@cisco.com", "")
         s = s.replace("@gmail.com", "")
-        i[a] = s
+        q[a] = s
     print(threadList[index].getQuestionCounter())
-    dbName = i[threadList[index].getQuestionCounter() - 100]
+    dbName = q[threadList[index].getQuestionCounter() - 100]
     text = pullAnswersFromDatabase(dbName)
     SendPersonalMessage(str(text), roomID, spark)
     threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
