@@ -167,6 +167,14 @@ def CheckActiveThread(roomID, userID, messageText, spark):
             #do stuff in the 1:1 rooms
             NextQuestionInSession(i, messageText, spark, roomID)
 
+def CleanFeedback(feedbackList, amount):
+    text = "Please provide feedback to the following answers:"
+    for i, s in enumerate(feedbackList):
+        if i < amount:
+            text += ("\n \n" + s)
+
+    return(text)            
+            
 #delete conversation thread for roomID with index <index>
 def DeleteActiveThread(index, roomID):
     if index == None:
@@ -297,7 +305,7 @@ def feedbackSession(index, messageText, spark, roomID):
     cleanGroupEmails = None
     cleanGroupUsers = None
 
-
+    l = len(threadList[threadList[index].getParentIndex()].getQuestionList())
     i = copy.copy(threadList[threadList[index].getParentIndex()].getGroupMembers())
     print(i)
 
@@ -342,11 +350,11 @@ def feedbackSession(index, messageText, spark, roomID):
             threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
             dbName = cleanGroupUsers[threadList[index].getQuestionCounter() - 100]
             text = pullAnswersFromDatabase(dbName)
-            SendPersonalMessage(str(text), roomID, spark)
+            SendPersonalMessage(CleanFeedback(text, l), roomID, spark)
             threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
         else:   
             text = pullAnswersFromDatabase(dbName)
-            SendPersonalMessage(str(text), roomID, spark)
+            SendPersonalMessage(CleanFeedback(text, l), roomID, spark)
             threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
     else:
         return
