@@ -220,7 +220,7 @@ def CheckActiveThread(roomID, userID, messageText, spark):
             NextQuestionInSession(i, messageText, spark, roomID)
 
 def CleanFeedback(feedbackList, amount):
-    text = "Please provide feedback to the following answers:"
+    text = "Please provide feedback to the following answers (score between 1 and 10):"
     for i, s in enumerate(feedbackList):
         if i < amount:
             text += ("\n \n" + s)
@@ -236,7 +236,14 @@ def DeleteActiveThread(index, roomID, spark):
         if "@" in roomID:
             print("personal message")
         else:
-            SendMessage(str(threadList[index].getWinningDB()), roomID, spark)
+            SendMessage("Brainstorming session is ending, the following has been selected as the best answer:", roomID, spark)
+            db = str(threadList[index].getWinningDB())
+            db.replace("@gmail.com", "")
+            db.replace("@cisco.com", "")
+            l = len(threadList[index].getQuestionList())
+            text = pullAnswersFromDatabase(dbName)
+            SendMessage(CleanFeedback(text, l), roomID, spark)
+
         del threadList[index]
         print("deleted thread for roomID " + str(roomID))
 
@@ -560,7 +567,7 @@ def QuitSession(spark, roomID):
 
 
     memberList = spark.memberships.list(roomId=roomID)
-    GROUP_MESSAGE = "Brainstorming session for '%s' is ending." % (room_name.title)
+    #GROUP_MESSAGE = "Brainstorming session for '%s' is ending." % (room_name.title)
     index = GetThreadIndex(roomID)
     DeleteActiveThread(index, roomID, spark)
     spark.messages.create(roomId=roomID, text=GROUP_MESSAGE) # Message the room.
@@ -570,8 +577,8 @@ def QuitSession(spark, roomID):
             spark.messages.create(toPersonEmail=Membership.personEmail, text=END_MESSAGE)
             deleteDatabase(Membership.personEmail.replace('@cisco.com', '').replace('@gmail.com',''))
     #TODO: Send the best idea to the group chat.
-    BEST_IDEA = "The best idea." #getBestIdea(room_id)
-    spark.messages.create(roomId=roomID, text=BEST_IDEA)
+    #BEST_IDEA = "The best idea." #getBestIdea(room_id)
+    #spark.messages.create(roomId=roomID, text=BEST_IDEA)
 
 #Used for processing the webhooks
 @post('/')
