@@ -292,22 +292,30 @@ def feedbackSession(index, messageText, spark, roomID):
         s = str(s)
         s = s.replace("(u'", "")
         s = s.replace("',)", "")
+        q[a] = s
+
+    cleanGroupEmails = q
+
+    for a, s in enumerate(q):
+        s = str(s)
         s = s.replace("@cisco.com", "")
         s = s.replace("@gmail.com", "")
         q[a] = s
-        
+    
+    cleanGroupUsers = q
+
     print(threadList[index].getQuestionCounter())
-    dbName = q[threadList[index].getQuestionCounter() - 100]
+    dbName = cleanGroupUsers[threadList[index].getQuestionCounter() - 100]
     feedbackCounter = threadList[threadList[index].getParentIndex()].getFeedbackCounter()
 
     if feedbackCounter == len(i):
-        for a, s in enumerate(i):
+        for a, s in enumerate(cleanGroupEmails):
             SendPersonalMessage("All answers are in, ready to start with feedback?", s, spark)
         threadList[threadList[index].getParentIndex()].setFeedbackCounter(feedbackCounter+1)
     elif feedbackCounter > len(i):
         if dbName in roomID:
             threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
-            dbName = q[threadList[index].getQuestionCounter() - 100]
+            dbName = cleanGroupUsers[threadList[index].getQuestionCounter() - 100]
             text = pullAnswersFromDatabase(dbName)
             SendPersonalMessage(str(text), roomID, spark)
             threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
