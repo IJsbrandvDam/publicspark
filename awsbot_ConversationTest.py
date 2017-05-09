@@ -241,7 +241,7 @@ def DeleteActiveThread(index, roomID, spark):
             db.replace("@gmail.com", "")
             db.replace("@cisco.com", "")
             l = len(threadList[index].getQuestionList())
-            text = pullAnswersFromDatabase(dbName)
+            text = pullAnswersFromDatabase(db)
             SendMessage(CleanFeedback(text, l), roomID, spark)
 
         del threadList[index]
