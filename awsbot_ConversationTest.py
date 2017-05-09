@@ -287,6 +287,7 @@ def feedbackSession(index, messageText, spark, roomID):
     print(i)
 
     q = i
+    w = i
 
     for a, s in enumerate(q):
         s = str(s)
@@ -295,11 +296,13 @@ def feedbackSession(index, messageText, spark, roomID):
         q[a] = s
 
     cleanGroupEmails = q
-    w=q
+
     print(cleanGroupEmails)
 
     for a, s in enumerate(w):
         s = str(s)
+        s = s.replace("(u'", "")
+        s = s.replace("',)", "")
         s = s.replace("@cisco.com", "")
         s = s.replace("@gmail.com", "")
         w[a] = s
