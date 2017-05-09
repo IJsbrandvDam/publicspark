@@ -13,7 +13,7 @@ threadList = []
 
 #object for storing individual conversation threads
 class activeThread():
-    def __init__(self, roomID, userID, startUpThread, conValue = 0, repeatCounter = 0, reversedCounter = 0, templateName = '', questionList = None, questionCounter = 0, reversedQuestionCounter = 1, tempName = None, groupMembers = None, parentIndex = None, feedbackCounter = 0):
+    def __init__(self, roomID, userID, startUpThread, conValue = 0, repeatCounter = 0, reversedCounter = 0, templateName = '', questionList = None, questionCounter = 0, reversedQuestionCounter = 1, tempName = None, groupMembers = None, parentIndex = None, feedbackCounter = 0, score = None):
         self.roomID = roomID
         self.userID = userID
         self.conValue = conValue
@@ -28,6 +28,7 @@ class activeThread():
         self.groupMembers = groupMembers
         self.parentIndex = parentIndex
         self.feedbackCounter = feedbackCounter
+        self.score = score
 
         
     def setConversationValue(self, i):
@@ -101,6 +102,12 @@ class activeThread():
 
     def setFeedbackCounter(self, i):
         self.feedbackCounter = i
+
+    def getScore(self):
+        return(self.score)
+
+    def setScore(self,i):
+        self.score.append(i)
 
 
 
@@ -328,7 +335,9 @@ def feedbackSession(index, messageText, spark, roomID):
             SendPersonalMessage("All answers are in, ready to start with feedback?", str(s), spark)
         threadList[threadList[index].getParentIndex()].setFeedbackCounter(feedbackCounter+1)
     elif feedbackCounter > len(i):
-
+        if threadList[threadList[index].getQuestionCounter() - 101] >= 0:
+            threadList[threadList[index].getQuestionCounter() - 101].setScore(messageText)
+            
         if dbName in roomID:
             threadList[index].setQuestionCounter(threadList[index].getQuestionCounter() + 1)
             dbName = cleanGroupUsers[threadList[index].getQuestionCounter() - 100]
