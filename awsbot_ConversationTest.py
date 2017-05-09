@@ -7,6 +7,7 @@ import os
 from generateResponse import generateResponse
 from DBconnect import sendToDatabase, pullFromDatabase, createDatabase, deleteDatabase, createTemplate, sendToTemp, pullAnswersFromDatabase
 import mysql.connector
+import copy
 
 threadList = []
 
@@ -290,7 +291,7 @@ def feedbackSession(index, messageText, spark, roomID):
     cleanGroupUsers = None
 
 
-    i = threadList[threadList[index].getParentIndex()].getGroupMembers()
+    i = copy.copy(threadList[threadList[index].getParentIndex()].getGroupMembers())
     print(i)
 
     q = i
