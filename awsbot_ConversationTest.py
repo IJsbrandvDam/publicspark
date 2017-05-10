@@ -465,7 +465,7 @@ def feedbackSession(index, messageText, spark, roomID):
 #used to set the basic text for the next response
 def SetConversationResponseText(conversationValue):
     if(conversationValue == 0):
-        return("Would you like to start a load a template or start a new template?")
+        return("Would you like to load an existing template or start a new template?")
 
     elif(conversationValue == 1):
         return("How many questions would you like to include?")
